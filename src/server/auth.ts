@@ -1,13 +1,9 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import {
-  getServerSession,
-  type DefaultSession,
-  type NextAuthOptions,
-} from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
-
+import { getServerSession, type NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { env } from "~/env.mjs";
 import { db } from "~/server/db";
+import { api } from "~/trpc/server";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -16,18 +12,29 @@ import { db } from "~/server/db";
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
 declare module "next-auth" {
-  interface Session extends DefaultSession {
+  interface Session {
     user: {
-      id: string;
+      id: string | undefined | null;
       // ...other properties
-      // role: UserRole;
-    } & DefaultSession["user"];
+      email: string | undefined | null;
+      isAdmin: boolean | undefined | null;
+    };
   }
+  interface User {
+    id: string;
+    email: string;
+    isAdmin: boolean;
+  }
+}
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+declare module "next-auth/jwt" {
+  /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
+  interface JWT {
+    idToken?: string;
+    id: string;
+    //other properties
+    isAdmin: boolean;
+  }
 }
 
 /**
@@ -37,19 +44,56 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    jwt({ token, user }) {
+      if (user) {
+        const newToken = {
+          id: user.id.toString(),
+          email: user.email,
+          isAdmin: user.isAdmin,
+        };
+        return newToken;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      if (token?.id) {
+        session.user = {
+          id: token.id,
+          email: token.email,
+          isAdmin: token.isAdmin,
+        };
+      }
+      return session;
+    },
   },
+  session: {
+    strategy: "jwt",
+    maxAge: 60 * 60 * 24 * 1,
+  },
+  secret: env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(db),
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
+    CredentialsProvider({
+      name: "your Credential",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (credentials === undefined) {
+          return null;
+        }
+        const user = await api.auth.signIn.query({
+          email: credentials.email,
+          password: credentials.password,
+        });
+        // If no error and we have user data, return it
+        if (user) {
+          return user;
+        }
+        // Return null if user data could not be retrieved
+        return null;
+      },
     }),
     /**
      * ...add more providers here.
