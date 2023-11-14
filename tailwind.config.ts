@@ -20,6 +20,12 @@ module.exports = {
       //   sans: ["var(--font-sans)", ...fontFamily.sans],
       // },
       colors: {
+        brand: {
+          purple: "#95288E",
+          white: "#FFFFFF",
+          black: "#000000",
+          golden: "#C5A22A",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

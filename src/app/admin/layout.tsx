@@ -1,14 +1,16 @@
 import { redirect } from "next/navigation";
 import { getServerAuthSession } from "~/server/auth";
 
-export default async function Home() {
+export default async function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const session = await getServerAuthSession();
   if (!session) {
     redirect("/api/auth/signin");
   }
   return (
-    <p className="text-center text-2xl">
-      {session && <span>Logged in as {session.user?.email}</span>}
-    </p>
-  );
+    <div className="container">{children}</div>
+  )
 }

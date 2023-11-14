@@ -47,6 +47,7 @@ export const authOptions: NextAuthOptions = {
     jwt({ token, user }) {
       if (user) {
         const newToken = {
+          ...token,
           id: user.id.toString(),
           email: user.email,
           isAdmin: user.isAdmin,
@@ -70,8 +71,16 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
     maxAge: 60 * 60 * 24 * 1,
   },
+
   secret: env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(db),
+  pages: {
+    signIn: "/auth/sign-in",
+  },
+  theme: {
+    colorScheme: "auto",
+    brandColor: "#95288E",
+  },
   providers: [
     CredentialsProvider({
       name: "your Credential",

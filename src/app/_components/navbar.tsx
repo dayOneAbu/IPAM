@@ -1,51 +1,53 @@
-"use client"
-
-import * as React from "react"
+import { cn } from "~/lib/utils"
+import { Button } from "./ui/button"
+import { CBElogo, adminNavigation, navLinks } from "~/data"
 import Link from "next/link"
-
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  navigationMenuTriggerStyle,
-} from "~/app/_components/ui/navigation-menu"
 import Image from "next/image"
-import CBElogo from "../../../public/CBElogo.png"
+import { getServerAuthSession } from "~/server/auth"
+import { LogoutButton } from "./buttons"
 
-export function NavigationBar() {
+export async function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
+  const session = await getServerAuthSession();
   return (
-    <div className="bg-red-100 h-24">
-      <NavigationMenu className="px-2 mx-auto max-w-7xl sm:px-4 lg:px-8 relative flex items-center justify-between">
-        <NavigationMenuList className="h-full">
-          <NavigationMenuItem>
-            <Link href="/" legacyBehavior passHref>
-              <NavigationMenuLink className={
-                navigationMenuTriggerStyle()
-              }>
-                <Image src={CBElogo} sizes="100vw" className="h-full w-52" alt="cbe logo" />
-              </NavigationMenuLink>
+    <div className={cn("pt-14 px-4", className)}>
+      <Link href={"/"} className="mt-8 mx-2">
+        <Image src={CBElogo} sizes="100vw" className="h-28 w-full" alt="cbe logo" />
+      </Link>
+      <div className="space-y-4 py-4">
+        <div className="px-3 py-2">
+          <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
+            Links
+          </h2>
+          {navLinks.map((item) => (
+            <Link key={item.name} href={item.href} className="space-y-1">
+              <Button variant="default" className="my-1 w-full justify-start">
+                <item.icon className="mx-2" />
+                {item.name}
+              </Button>
             </Link>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-        <NavigationMenuList>
-
-          <NavigationMenuItem>
-            <NavigationMenuLink className={
-              navigationMenuTriggerStyle()
-            }>
-              Branches
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuLink className={
-              navigationMenuTriggerStyle()
-            }>
-              ATMs
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
+          ))}
+        </div>
+        {
+          session?.user.isAdmin && (
+            <div className="px-3 py-2">
+              <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
+                Admin Links
+              </h2>
+              {adminNavigation.map(
+                (item) => (
+                  <div key={item.name} className="space-y-1 ">
+                    <Button variant="default" className="w-full my-1 justify-start">
+                      <item.icon className="mx-2" />
+                      {item.name}
+                    </Button>
+                  </div>
+                )
+              )}
+              <LogoutButton />
+            </div>
+          )
+        }
+      </div>
     </div>
   )
 }
