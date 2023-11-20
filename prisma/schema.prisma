@@ -11,18 +11,21 @@ datasource db {
 }
 
 model User {
-    id            Int           @id @default(autoincrement())
-    email         String        @unique
-    password      String
-    isAdmin       Boolean       @default(false)
-    branchCreated Branch[]
-    ATMCreated    ATM[]
-    createdAt     DateTime      @default(now())
-    updatedAt     DateTime      @updatedAt
-    District      District[]
-    Cluster       Cluster[]
-    TunnelRange   TunnelRange[]
-    LANRange      LANRange[]
+    id              Int               @id @default(autoincrement())
+    email           String            @unique
+    password        String
+    isAdmin         Boolean           @default(false)
+    branchCreated   Branch[]
+    ATMCreated      ATM[]
+    District        District[]
+    Cluster         Cluster[]
+    TunnelRange     TunnelRange[]
+    LANRange        LANRange[]
+    LeasedBranchIps LeasedBranchIps[]
+    LeasedATMIps    LeasedATMIps[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     @@index([email])
 }
@@ -37,8 +40,9 @@ model Branch {
     ipWithTunnel LeasedBranchIps?
     createdBy    User             @relation(fields: [userId], references: [id])
     userId       Int
-    createdAt    DateTime         @default(now())
-    updatedAt    DateTime         @updatedAt
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     @@index([name])
 }
@@ -55,8 +59,9 @@ model ATM {
     LeasedATMIps    LeasedATMIps?
     createdBy       User          @relation(fields: [userId], references: [id])
     userId          Int
-    createdAt       DateTime      @default(now())
-    updatedAt       DateTime      @updatedAt
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     @@index([name])
 }
@@ -72,10 +77,11 @@ model District {
     tunnelRangeId     Int?
     usableLANRange    LANRange?    @relation(fields: [lanRangeId], references: [id])
     lanRangeId        Int?
-    createdAt         DateTime     @default(now())
-    updatedAt         DateTime     @updatedAt
     createdBy         User         @relation(fields: [userId], references: [id])
     userId            Int
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     @@index([name])
 }
@@ -84,10 +90,11 @@ model Cluster {
     id        Int        @id @default(autoincrement())
     name      String
     districts District[]
-    createdAt DateTime   @default(now())
-    updatedAt DateTime   @updatedAt
     createdBy User       @relation(fields: [userId], references: [id])
     userId    Int
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     @@index([name])
 }
@@ -96,56 +103,85 @@ model TunnelRange {
     id         Int        @id @default(autoincrement())
     lowerLimit String
     upperLimit String
-    districts  District[]
-    createdAt  DateTime   @default(now())
-    updatedAt  DateTime   @updatedAt
     createdBy  User       @relation(fields: [userId], references: [id])
     userId     Int
+    District   District[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model LANRange {
     id         Int        @id @default(autoincrement())
     lowerLimit String
     upperLimit String
-    districts  District[]
-    createdAt  DateTime   @default(now())
-    updatedAt  DateTime   @updatedAt
     createdBy  User       @relation(fields: [userId], references: [id])
     userId     Int
+    District   District[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model LeasedBranchIps {
-    id               Int     @id @default(autoincrement())
-    isTaken          Boolean
-    isReserved       Boolean
-    assignedTo       String
-    authoredBy       String
-    remark           String
-    TunnelIP_DR_ER11 String
-    TunnelIP_DR_ER12 String
-    TunnelIP_DC_ER21 String
-    TunnelIP_DC_ER22 String
+    id              Int          @id @default(autoincrement())
+    isTaken         Boolean
+    isReserved      Boolean
+    authorizedBy    User         @relation(fields: [userId], references: [id])
+    remark          String
+    lanIpAddress    AllLANIps    @relation(fields: [allLANIpsId], references: [id])
+    allLANIpsId     Int
+    tunnelIpAddress AllTunnelIps @relation(fields: [tunnelIpId], references: [id])
+    tunnelIpId      Int          @unique
+    branch          Branch       @relation(fields: [assignedToId], references: [id])
+    assignedToId    Int          @unique
+    userId          Int
 
-    branch    Branch   @relation(fields: [branchId], references: [id])
-    branchId  Int      @unique
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
 
 model LeasedATMIps {
-    id               Int     @id @default(autoincrement())
+    id              Int          @id @default(autoincrement())
+    assignedTo      String
+    authorizedBy    User         @relation(fields: [userId], references: [id])
+    remark          String
+    lanIpAddress    AllLANIps    @relation(fields: [allLANIpsId], references: [id])
+    allLANIpsId     Int
+    tunnelIpAddress AllTunnelIps @relation(fields: [tunnelIpId], references: [id])
+    tunnelIpId      Int          @unique
+    atm             ATM          @relation(fields: [atmId], references: [id])
+    atmId           Int          @unique
+    userId          Int
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model AllLANIps {
+    id              Int               @id @default(autoincrement())
+    isTaken         Boolean
+    isReserved      Boolean
+    ipAddress       String
+    subnetMask      String
+    LeasedATMIps    LeasedATMIps[]
+    LeasedBranchIps LeasedBranchIps[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model AllTunnelIps {
+    id               Int              @id @default(autoincrement())
     isTaken          Boolean
     isReserved       Boolean
-    assignedTo       String
-    authoredBy       String
-    remark           String
     TunnelIP_DR_ER11 String
     TunnelIP_DR_ER12 String
     TunnelIP_DC_ER21 String
     TunnelIP_DC_ER22 String
+    LeasedBranchIps  LeasedBranchIps?
+    LeasedATMIps     LeasedATMIps?
 
-    atm       ATM      @relation(fields: [atmId], references: [id])
-    atmId     Int      @unique
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
