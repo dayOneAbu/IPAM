@@ -28,6 +28,9 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
+    // filterFn: (row, id, ) => {
+    //   return value.includes(row.getValue(id))
+    // },
     filterFn: "includesString"
   },
   {
@@ -42,7 +45,12 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
+
     filterFn: "includesString"
+    // filterFn: (row, id, value) => {
+    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+    //   return value.includes(row.getValue(id))
+    // },
   },
   {
     accessorKey: "wanIpAddress",
@@ -55,11 +63,8 @@ export const columns: ColumnDef<Branch>[] = [
           {row.getValue("wanIpAddress")}
         </span>
       </div>
-    )
-    ,
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    ),
+    filterFn: "includesString"
   },
   {
     accessorKey: "lanIpAddress",
@@ -72,11 +77,8 @@ export const columns: ColumnDef<Branch>[] = [
           {row.getValue("lanIpAddress")}
         </span>
       </div>
-    )
-    ,
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    ),
+    filterFn: "includesString"
   },
   {
     accessorKey: "tunnelIP_DR_ER11",
@@ -90,10 +92,7 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
-    enableSorting: false
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    filterFn: "includesString"
   },
   {
     accessorKey: "tunnelIP_DR_ER12",
@@ -107,10 +106,7 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
-    enableSorting: false
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    filterFn: "includesString"
   },
   {
     accessorKey: "tunnelIP_DC_ER21",
@@ -124,10 +120,7 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
-    enableSorting: false
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    filterFn: "includesString"
   },
   {
     accessorKey: "tunnelIP_DC_ER22",
@@ -141,10 +134,7 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
-    enableSorting: false
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    filterFn: "includesString"
   },
   {
     id: "actions",

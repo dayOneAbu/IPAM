@@ -4,30 +4,29 @@ export * as CBElogo from "../../public/CBElogo.png";
 export const navLinks = [
   { name: "Branches", href: "/branch", icon: Landmark, current: true },
   { name: "ATMs", href: "/atm", icon: Calculator, current: false },
-  { name: "Districts", href: "/district", icon: MapPinned, current: false },
 ];
 export const adminNavigation = [
   {
     name: "Manage Users",
-    href: "index",
+    href: "user",
     icon: User,
     current: true,
   },
   {
     name: "Manage Branches",
-    href: "category",
+    href: "branch",
     icon: Landmark,
     current: false,
   },
   {
     name: "Manage ATMs",
-    href: "benchmark",
+    href: "atm",
     icon: Calculator,
     current: false,
   },
   {
     name: "Manage Districts",
-    href: "agent",
+    href: "district",
     icon: MapPinned,
     current: false,
   },

@@ -3,7 +3,7 @@
 import { type ColumnDef } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "~/app/_components/data-table/column-header"
 import { DataTableRowActions } from "~/app/_components/data-table/row-actions"
-
+import { } from "lucide-react"
 import { type Branch } from "~/data/schema"
 
 export const columns: ColumnDef<Branch>[] = [
@@ -62,6 +62,40 @@ export const columns: ColumnDef<Branch>[] = [
     // },
   },
   {
+    accessorKey: "loopBackAddress",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="LoopBack-IP_Address" />
+    ),
+    cell: ({ row }) => (
+      <div className="flex min-w-[100px] items-center">
+        <span className="truncate font-medium">
+          {row.getValue("loopBackAddress")}
+        </span>
+      </div>
+    )
+    ,
+    // filterFn: (row, id, value) => {
+    //   return value.includes(row.getValue(id))
+    // },
+  },
+  {
+    accessorKey: "isOutlet",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="ATM-Type" />
+    ),
+    cell: ({ row }) => (
+      <div className="flex min-w-[100px] items-center">
+        <span className="truncate font-medium">
+          {row.getValue("isOutlet") ? "Outlet" : "Branch Based"}
+        </span>
+      </div>
+    )
+    ,
+    // filterFn: (row, id, value) => {
+    //   return value.includes(row.getValue(id))
+    // },
+  },
+  {
     accessorKey: "lanIpAddress",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="LAN-IP_Address" />
@@ -78,6 +112,7 @@ export const columns: ColumnDef<Branch>[] = [
     //   return value.includes(row.getValue(id))
     // },
   },
+
   {
     accessorKey: "tunnelIP_DR_ER11",
     header: ({ column }) => (

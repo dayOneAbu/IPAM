@@ -21,11 +21,11 @@ export default async function RootLayout({
     <html lang="en">
       <body className={"min-h-screen bg-background font-sans antialiased"}>
         <TRPCReactProvider cookies={cookies().toString()}>
-          <main className="min-h-screen grid grid-cols-7">
+          <main className="min-h-screen grid grid-cols-8">
             <div className="col-span-1 bg-brand-purple">
               {session && <Sidebar />}
             </div>
-            <div className="col-span-6 flex flex-col justify-center">{children}</div>
+            <div className="col-span-7 flex flex-col justify-center">{children}</div>
           </main>
         </TRPCReactProvider>
       </body>

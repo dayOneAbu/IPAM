@@ -18,3 +18,10 @@ export const LogoutButton = () => {
     </Button>
   );
 };
+export function SubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
+  return (
+    <Button variant="default" className="mr-3 mt-4 mx-2" type="submit">
+      {isSubmitting ? "Submitting..." : "Submit"}
+    </Button>
+  );
+};

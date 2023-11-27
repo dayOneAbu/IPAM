@@ -3,12 +3,13 @@
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "~/lib/utils"
-import { Button } from "~/app/_components/ui/button"
 import { Input } from "~/app/_components/ui/input"
 import { FormProvider, useForm } from "react-hook-form"
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/app/_components/ui/form"
 import { signIn } from "next-auth/react"
 import { useSearchParams } from 'next/navigation'
+import { SubmitButton } from "~/app/_components/buttons"
+import { useState } from "react"
 
 
 
@@ -20,6 +21,8 @@ const formSchema = z.object({
 })
 
 export default function UserAuthForm({ ...props }) {
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const params = useSearchParams()
   const callbackURL = params.get("callbackUrl")
 
@@ -32,7 +35,9 @@ export default function UserAuthForm({ ...props }) {
     progressive: true
   })
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true)
     await signIn("credentials", { ...values, redirect: true, callbackUrl: callbackURL ?? undefined })
+    setIsSubmitting(false)
   }
   return (
     <FormProvider {...form}>
@@ -65,7 +70,7 @@ export default function UserAuthForm({ ...props }) {
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <SubmitButton isSubmitting={isSubmitting} />
         </form>
       </div>
     </FormProvider>

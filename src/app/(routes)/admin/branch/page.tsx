@@ -1,29 +1,18 @@
 import { type Metadata } from "next"
 import { DataTable } from "~/app/_components/DataTable";
 import { columns } from "./column";
-import { getServerAuthSession } from "~/server/auth";
-import { redirect } from "next/navigation";
+
+import { Button } from "~/app/_components/ui/button";
+import Link from "next/link";
+
+
 
 export const metadata: Metadata = {
-  title: "CBE branches",
+  title: "branches",
   description: "watch all information related to branch",
 }
-// // Simulate a database read for tasks.
-// async function getTasks() {
-//   const data = await fs.readFile(
-//     path.join(process.cwd(), "app/examples/tasks/data/tasks.json")
-//   )
+export default function BranchPage() {
 
-//   const tasks = JSON.parse(data.toString())
-
-//   return z.array(taskSchema).parse(tasks)
-// }
-
-export default async function BranchPage() {
-  const session = await getServerAuthSession();
-  if (!session) {
-    redirect("/api/auth/signin");
-  }
   const branches = [{
     id: 1,
     name: "string",
@@ -106,18 +95,22 @@ export default async function BranchPage() {
     }
   ]
   return (
-    <>
-      <div className="hidden h-full flex-1 flex-col space-y-8 p-4 md:flex">
-        <div className="flex items-center justify-between space-y-2">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
-            <p className="text-muted-foreground">
-              Here&apos;s a list of CBE Branches with all valuable information!
-            </p>
-          </div>
+    <div className="hidden h-full flex-1 flex-col space-y-8 p-4 md:flex">
+      <div className="flex items-center justify-between space-y-2">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
+          <p className="text-muted-foreground">
+            Here&apos;s a list of CBE Branches with all valuable information!
+          </p>
         </div>
-        <DataTable data={branches} columns={columns} colFilterable={filterOps} />
+        <Link href={`branch/new`} className="space-y-1">
+          <Button variant="default" className="w-44 my-1 justify-start">
+            Add New Branch
+          </Button>
+        </Link>
       </div>
-    </>
+      <DataTable data={branches} columns={columns} colFilterable={filterOps} />
+    </div>
+
   )
 }

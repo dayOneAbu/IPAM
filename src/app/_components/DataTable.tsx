@@ -28,8 +28,8 @@ import { DataTablePagination } from "./data-table/pagination"
 import { Input } from "./ui/input"
 
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
+interface DataTableProps<TData> {
+  columns: ColumnDef<TData>[]
   data: TData[]
   colFilterable?: {
     title: string;
@@ -41,11 +41,11 @@ interface DataTableProps<TData, TValue> {
 }
 
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData>({
   columns,
   data,
   colFilterable
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps<TData>) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
@@ -77,15 +77,15 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <div className="mx-8">
+      <div className="flex mx-8">
         <Input
           placeholder="search..."
           value={globalFilter ?? ''}
           onChange={e => setGlobalFilter(e.target.value)}
           className="h-8 w-[150px] lg:w-[250px]"
         />
+        <DataTableToolbar table={table} colFilterable={colFilterable} />
       </div>
-      <DataTableToolbar table={table} colFilterable={colFilterable} />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

@@ -3,33 +3,27 @@ import { DataTable } from "~/app/_components/DataTable";
 import { columns } from "./column";
 import { getServerAuthSession } from "~/server/auth";
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { Button } from "~/app/_components/ui/button";
 
 export const metadata: Metadata = {
-  title: "CBE branches",
-  description: "watch all information related to branch",
+  title: "CBE ATM's",
+  description: "watch all information related to ATM",
 }
-// // Simulate a database read for tasks.
-// async function getTasks() {
-//   const data = await fs.readFile(
-//     path.join(process.cwd(), "app/examples/tasks/data/tasks.json")
-//   )
-
-//   const tasks = JSON.parse(data.toString())
-
-//   return z.array(taskSchema).parse(tasks)
-// }
 
 export default async function BranchPage() {
   const session = await getServerAuthSession();
   if (!session) {
     redirect("/api/auth/signin");
   }
-  const branches = [{
+  const atm = [{
     id: 1,
     name: "string",
     district: "x",
     wanIpAddress: " 102.610.204.128/25",
     lanIpAddress: " 102.610.204.128/25",
+    isOutlet: true,
+    loopBackAddress: "192.168.0.0",
     tunnelIP_DR_ER11: " 102.610.204.128/25",
     tunnelIP_DR_ER12: " 102.610.204.128/25",
     tunnelIP_DC_ER21: " 102.610.204.128/25",
@@ -43,6 +37,8 @@ export default async function BranchPage() {
     district: "arada",
     wanIpAddress: " 102.610.204.128/25",
     lanIpAddress: " 102.610.204.128/25",
+    isOutlet: false,
+    loopBackAddress: "192.168.0.0",
     tunnelIP_DR_ER11: " 102.610.204.128/25",
     tunnelIP_DR_ER12: " 102.610.204.128/25",
     tunnelIP_DC_ER21: " 102.610.204.128/25",
@@ -56,6 +52,8 @@ export default async function BranchPage() {
     district: "arada",
     wanIpAddress: " 102.610.204.128/25",
     lanIpAddress: " 102.610.204.128/25",
+    isOutlet: false,
+    loopBackAddress: "192.168.0.0",
     tunnelIP_DR_ER11: " 102.610.204.128/25",
     tunnelIP_DR_ER12: "78/25",
     tunnelIP_DC_ER21: " 102.610.204.128/25",
@@ -106,18 +104,23 @@ export default async function BranchPage() {
     }
   ]
   return (
-    <>
-      <div className="hidden h-full flex-1 flex-col space-y-8 p-4 md:flex">
-        <div className="flex items-center justify-between space-y-2">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
-            <p className="text-muted-foreground">
-              Here&apos;s a list of CBE Branches with all valuable information!
-            </p>
-          </div>
+
+    <div className="hidden h-full flex-1 flex-col space-y-8 p-4 md:flex">
+      <div className="flex items-center justify-between space-y-2">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
+          <p className="text-muted-foreground">
+            Here&apos;s a list of CBE ATM&apos;s with all valuable information!
+          </p>
         </div>
-        <DataTable data={branches} columns={columns} colFilterable={filterOps} />
+        <Link href={`atm/new`} className="space-y-1">
+          <Button variant="default" className="w-44 my-1 justify-start">
+            Add New ATM
+          </Button>
+        </Link>
       </div>
-    </>
+      <DataTable data={atm} columns={columns} colFilterable={filterOps} />
+    </div>
+
   )
 }
