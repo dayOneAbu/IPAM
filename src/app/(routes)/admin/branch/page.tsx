@@ -4,6 +4,7 @@ import { columns } from "./column";
 
 import { Button } from "~/app/_components/ui/button";
 import Link from "next/link";
+import { Plus } from "lucide-react";
 
 
 
@@ -105,7 +106,7 @@ export default function BranchPage() {
         </div>
         <Link href={`branch/new`} className="space-y-1">
           <Button variant="default" className="w-44 my-1 justify-start">
-            Add New Branch
+            <Plus className="text-white mx-2 h-8 w-4" />  Add New Branch
           </Button>
         </Link>
       </div>

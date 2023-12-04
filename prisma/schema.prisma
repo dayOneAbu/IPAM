@@ -16,10 +16,10 @@ model User {
     password        String
     isAdmin         Boolean           @default(false)
     branchCreated   Branch[]
-    ATMCreated      ATM[]
-    District        District[]
-    Cluster         Cluster[]
-    TunnelRange     TunnelRange[]
+    atmCreated      ATM[]
+    districtCreated District[]
+    clusterCreated  Cluster[]
+    tunnelRange     TunnelRange[]
     LANRange        LANRange[]
     LeasedBranchIps LeasedBranchIps[]
     LeasedATMIps    LeasedATMIps[]
@@ -68,10 +68,10 @@ model ATM {
 
 model District {
     id                Int          @id @default(autoincrement())
-    name              String
+    name              String       @unique
     branches          Branch[]
     ATM               ATM[]
-    Cluster           Cluster?     @relation(fields: [clusterId], references: [id])
+    cluster           Cluster?     @relation(fields: [clusterId], references: [id])
     clusterId         Int?
     usableTunnelRange TunnelRange? @relation(fields: [tunnelRangeId], references: [id])
     tunnelRangeId     Int?
@@ -88,7 +88,7 @@ model District {
 
 model Cluster {
     id        Int        @id @default(autoincrement())
-    name      String
+    name      String     @unique
     districts District[]
     createdBy User       @relation(fields: [userId], references: [id])
     userId    Int
@@ -100,24 +100,26 @@ model Cluster {
 }
 
 model TunnelRange {
-    id         Int        @id @default(autoincrement())
-    lowerLimit String
-    upperLimit String
-    createdBy  User       @relation(fields: [userId], references: [id])
-    userId     Int
-    District   District[]
+    id          Int        @id @default(autoincrement())
+    clusterName String
+    lowerLimit  String     @unique
+    upperLimit  String     @unique
+    createdBy   User       @relation(fields: [userId], references: [id])
+    userId      Int
+    District    District[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
 
 model LANRange {
-    id         Int        @id @default(autoincrement())
-    lowerLimit String
-    upperLimit String
-    createdBy  User       @relation(fields: [userId], references: [id])
-    userId     Int
-    District   District[]
+    id          Int        @id @default(autoincrement())
+    clusterName String
+    lowerLimit  String     @unique
+    upperLimit  String     @unique
+    createdBy   User       @relation(fields: [userId], references: [id])
+    userId      Int
+    District    District[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -160,7 +162,7 @@ model LeasedATMIps {
 
 model AllLANIps {
     id              Int               @id @default(autoincrement())
-    isTaken         Boolean
+    isTaken         Boolean           @default(false)
     isReserved      Boolean
     ipAddress       String
     subnetMask      String
@@ -173,8 +175,8 @@ model AllLANIps {
 
 model AllTunnelIps {
     id               Int              @id @default(autoincrement())
-    isTaken          Boolean
-    isReserved       Boolean
+    isTaken          Boolean          @default(false)
+    isReserved       Boolean          @default(false)
     TunnelIP_DR_ER11 String
     TunnelIP_DR_ER12 String
     TunnelIP_DC_ER21 String

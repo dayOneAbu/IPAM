@@ -1,9 +1,56 @@
-import { Calculator, Landmark, MapPinned, Radar, User } from "lucide-react";
-export * as CBElogo from "../../public/CBElogo.png";
-
+import {
+  Calculator,
+  Cone,
+  Landmark,
+  MapPinned,
+  Network,
+  Radar,
+  Satellite,
+  User,
+} from "lucide-react";
+import * as CBElogo from "../../public/CBElogo.png";
+export default CBElogo;
 export const navLinks = [
   { name: "Branches", href: "/branch", icon: Landmark, current: true },
   { name: "ATMs", href: "/atm", icon: Calculator, current: false },
+];
+export const otherNavigation = [
+  {
+    name: "Tunnel Range's",
+    href: "/tunnel-range",
+    icon: Cone,
+    current: false,
+  },
+  {
+    name: "LAN Range's",
+    href: "/lan-range",
+    icon: Network,
+    current: false,
+  },
+  {
+    name: "Leased BranchIps",
+    href: "/leased-branch-ips",
+    icon: Landmark,
+    current: false,
+  },
+  {
+    name: "Leased ATMIps",
+    href: "/leased-atm-ips",
+    icon: Calculator,
+    current: false,
+  },
+  {
+    name: "All LANIps",
+    href: "/lan-ips",
+    icon: Network,
+    current: false,
+  },
+  {
+    name: "All TunnelIps",
+    href: "/tunnel-ips",
+    icon: Satellite,
+    current: false,
+  },
 ];
 export const adminNavigation = [
   {

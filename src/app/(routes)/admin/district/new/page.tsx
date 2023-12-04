@@ -5,7 +5,7 @@ import { cn } from "~/lib/utils"
 import { Button } from "~/app/_components/ui/button"
 import { Input } from "~/app/_components/ui/input"
 import { FormProvider, useForm } from "react-hook-form"
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "~/app/_components/ui/form"
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/app/_components/ui/form"
 import {
   Select,
   SelectContent,
@@ -17,8 +17,6 @@ import Link from "next/link"
 import { Textarea } from "~/app/_components/ui/textarea"
 import { SubmitButton } from "~/app/_components/buttons"
 import { useState } from "react"
-import { Switch } from "~/app/_components/ui/switch"
-import { RadioGroup, RadioGroupItem } from "~/app/_components/ui/radio-group"
 import { ChevronLeft } from "lucide-react"
 
 
@@ -27,10 +25,9 @@ const formSchema = z.object({
     .min(3, { message: "please provide the exact Name" }),
   districtId: z.string({ required_error: "District Id is required" })
     .min(3, { message: "please provide District Id" }),
+  // ipWithTunnel: z.string({ required_error: "please Pick and assign IP Address With Tunnel address" }),
   wanAddress: z.string({ required_error: "WAN Address is required" })
     .min(8, { message: "please provide the exact WAN Address" }),
-  loopBackAddress: z.string({ required_error: "please Pick and assign loop back IP Address With Tunnel address" }),
-  isOutlet: z.boolean({ required_error: "please choose the ATM TYPE" }),
   remark: z.string({ required_error: "required field" })
     .min(10, { message: "please provide some justification for your action" }),
 })
@@ -54,11 +51,11 @@ export default function NewPage() {
     <div className="mx-4 py-6">
       <Link href={`.`} className="space-y-1">
         <Button variant="destructive" className="w-44 my-6 justify-start">
-          <ChevronLeft className="text-white h-8 w-4" />   Back
+          <ChevronLeft className="text-white h-8 w-4" /> Go Back
         </Button>
       </Link>
       <div className="space-y-2 mx-6">
-        <h2 className="text-2xl font-bold tracking-tight">New Branch</h2>
+        <h2 className="text-2xl font-bold tracking-tight">New District</h2>
         <p className="text-muted-foreground">
           Here&apos;s a list of required information to be inserted for CBE Branch <br />
           please fill all required information
@@ -72,7 +69,7 @@ export default function NewPage() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>ATM Name</FormLabel>
+                  <FormLabel>Branch Name</FormLabel>
                   <FormMessage />
                   <FormControl>
                     <Input type="text" {...field} />
@@ -112,53 +109,6 @@ export default function NewPage() {
                   <FormControl>
                     <Input type="text" {...field} />
                   </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="loopBackAddress"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>LoopBack Address</FormLabel>
-                  <FormMessage />
-                  <FormControl>
-                    <Input type="text" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="isOutlet"
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel>ATM TYPE</FormLabel>
-                  <FormDescription>Choose the type of ATM being inserted</FormDescription>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="flex flex-col space-y-1"
-                    >
-
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value={true} />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Outlet
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value={false} />
-                        </FormControl>
-                        <FormLabel className="font-normal">Branch Extension</FormLabel>
-                      </FormItem>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />

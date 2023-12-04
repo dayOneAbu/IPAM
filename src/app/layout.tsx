@@ -25,7 +25,7 @@ export default async function RootLayout({
             <div className="col-span-1 bg-brand-purple">
               {session && <Sidebar />}
             </div>
-            <div className="col-span-7 flex flex-col justify-center">{children}</div>
+            <div className="col-span-7 flex flex-col justify-start">{children}</div>
           </main>
         </TRPCReactProvider>
       </body>

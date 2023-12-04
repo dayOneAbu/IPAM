@@ -1,6 +1,6 @@
+import { redirect } from "next/navigation"
+
 function Page() {
-  return (
-    <div>Page</div>
-  )
+  redirect('/admin/branch')
 }
 export default Page

@@ -17,125 +17,91 @@ export const columns: ColumnDef<Branch>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "name",
+    accessorKey: "email",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
+      <DataTableColumnHeader column={column} title="Email" />
     ),
     cell: ({ row }) => (
       <div className="flex space-x-1">
         <span className="truncate font-medium">
-          {row.getValue("name")}
+          {row.getValue("email")}
         </span>
       </div>
     ),
-    // filterFn: (row, id, ) => {
-    //   return value.includes(row.getValue(id))
-    // },
     filterFn: "includesString"
   },
   {
-    accessorKey: "district",
+    accessorKey: "isAdmin",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="District" />
+      <DataTableColumnHeader column={column} title="User Privilege" />
     ),
     cell: ({ row }) => (
       <div className="flex space-x-1">
         <span className="truncate font-medium">
-          {row.getValue("district")}
+          {row.getValue("isAdmin") ? "Admin" : "Normal User"}
         </span>
       </div>
     ),
 
     filterFn: "includesString"
-    // filterFn: (row, id, value) => {
-    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-    //   return value.includes(row.getValue(id))
-    // },
   },
   {
-    accessorKey: "wanIpAddress",
+    accessorKey: "branchCreated",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="WAN-IP_Address" />
+      <DataTableColumnHeader column={column} title="branch's Created" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
         <span className="truncate font-medium">
-          {row.getValue("wanIpAddress")}
+          {row.getValue("branchCreated")}
         </span>
       </div>
     ),
     filterFn: "includesString"
   },
   {
-    accessorKey: "lanIpAddress",
+    accessorKey: "atmCreated",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="LAN-IP_Address" />
+      <DataTableColumnHeader column={column} title="ATM Created" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
         <span className="truncate font-medium">
-          {row.getValue("lanIpAddress")}
+          {row.getValue("atmCreated")}
         </span>
       </div>
     ),
     filterFn: "includesString"
   },
   {
-    accessorKey: "tunnelIP_DR_ER11",
+    accessorKey: "districtCreated",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="TunnelIP_DR_ER11" />
+      <DataTableColumnHeader column={column} title="District Created" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
         <span className="truncate font-medium">
-          {row.getValue("tunnelIP_DR_ER11")}
+          {row.getValue("districtCreated")}
         </span>
       </div>
     ),
     filterFn: "includesString"
   },
   {
-    accessorKey: "tunnelIP_DR_ER12",
+    accessorKey: "clusterCreated",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="TunnelIP_DR_ER12" />
+      <DataTableColumnHeader column={column} title="Cluster Created" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
         <span className="truncate font-medium">
-          {row.getValue("tunnelIP_DR_ER12")}
+          {row.getValue("clusterCreated")}
         </span>
       </div>
     ),
     filterFn: "includesString"
   },
-  {
-    accessorKey: "tunnelIP_DC_ER21",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="TunnelIP_DC_ER21" />
-    ),
-    cell: ({ row }) => (
-      <div className="flex min-w-[100px] items-center">
-        <span className="truncate font-medium">
-          {row.getValue("tunnelIP_DC_ER21")}
-        </span>
-      </div>
-    ),
-    filterFn: "includesString"
-  },
-  {
-    accessorKey: "tunnelIP_DC_ER22",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="TunnelIP_DC_ER22" />
-    ),
-    cell: ({ row }) => (
-      <div className="flex min-w-[100px] items-center">
-        <span className="truncate font-medium">
-          {row.getValue("tunnelIP_DC_ER22")}
-        </span>
-      </div>
-    ),
-    filterFn: "includesString"
-  },
+
   {
     id: "actions",
     cell: () => <DataTableRowActions actions={[

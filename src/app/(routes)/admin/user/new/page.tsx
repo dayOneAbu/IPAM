@@ -17,22 +17,16 @@ import Link from "next/link"
 import { Textarea } from "~/app/_components/ui/textarea"
 import { SubmitButton } from "~/app/_components/buttons"
 import { useState } from "react"
-import { Switch } from "~/app/_components/ui/switch"
 import { RadioGroup, RadioGroupItem } from "~/app/_components/ui/radio-group"
 import { ChevronLeft } from "lucide-react"
 
 
 const formSchema = z.object({
-  name: z.string({ required_error: "branch Name is required " })
-    .min(3, { message: "please provide the exact Name" }),
-  districtId: z.string({ required_error: "District Id is required" })
-    .min(3, { message: "please provide District Id" }),
-  wanAddress: z.string({ required_error: "WAN Address is required" })
-    .min(8, { message: "please provide the exact WAN Address" }),
-  loopBackAddress: z.string({ required_error: "please Pick and assign loop back IP Address With Tunnel address" }),
-  isOutlet: z.boolean({ required_error: "please choose the ATM TYPE" }),
-  remark: z.string({ required_error: "required field" })
-    .min(10, { message: "please provide some justification for your action" }),
+  email: z.string().email({ message: "Email is required " }),
+  password: z.string({ required_error: "password is required" })
+    .min(5, { message: "please provide strong password" }),
+  isAdmin: z.boolean(),
+
 })
 
 export default function NewPage() {
@@ -53,15 +47,14 @@ export default function NewPage() {
   return (
     <div className="mx-4 py-6">
       <Link href={`.`} className="space-y-1">
-        <Button variant="destructive" className="w-44 my-6 justify-start">
-          <ChevronLeft className="text-white h-8 w-4" />   Back
+        <Button variant="destructive" className="w-44 my-2 justify-start">
+          <ChevronLeft className="text-white h-8 w-4" />Go Back
         </Button>
       </Link>
       <div className="space-y-2 mx-6">
-        <h2 className="text-2xl font-bold tracking-tight">New Branch</h2>
+        <h2 className="text-2xl font-bold tracking-tight">New User</h2>
         <p className="text-muted-foreground">
-          Here&apos;s a list of required information to be inserted for CBE Branch <br />
-          please fill all required information
+          you can create a new user and choose the account privilege
         </p>
       </div>
       <FormProvider {...form}>
@@ -69,10 +62,24 @@ export default function NewPage() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl">
             <FormField
               control={form.control}
-              name="name"
+              name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>ATM Name</FormLabel>
+                  <FormLabel>Email</FormLabel>
+                  <FormMessage />
+                  <FormControl>
+                    <Input type="text" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>password</FormLabel>
                   <FormMessage />
                   <FormControl>
                     <Input type="text" {...field} />
@@ -82,59 +89,11 @@ export default function NewPage() {
             />
             <FormField
               control={form.control}
-              name="districtId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>District</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a District in which the branch is located" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Arada">Arada</SelectItem>
-                      <SelectItem value="merkato">merkato</SelectItem>
-                      <SelectItem value="kirkos">kirkos</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="wanAddress"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>WAN Address</FormLabel>
-                  <FormMessage />
-                  <FormControl>
-                    <Input type="text" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="loopBackAddress"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>LoopBack Address</FormLabel>
-                  <FormMessage />
-                  <FormControl>
-                    <Input type="text" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="isOutlet"
+              name="isAdmin"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel>ATM TYPE</FormLabel>
-                  <FormDescription>Choose the type of ATM being inserted</FormDescription>
+                  <FormLabel>User Type</FormLabel>
+                  <FormDescription>Choose the type of User privilege</FormDescription>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -147,31 +106,18 @@ export default function NewPage() {
                           <RadioGroupItem value={true} />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          Outlet
+                          Admin
                         </FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
                           <RadioGroupItem value={false} />
                         </FormControl>
-                        <FormLabel className="font-normal">Branch Extension</FormLabel>
+                        <FormLabel className="font-normal">Normal User</FormLabel>
                       </FormItem>
                     </RadioGroup>
                   </FormControl>
                   <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="remark"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Remark</FormLabel>
-                  <FormMessage />
-                  <FormControl>
-                    <Textarea rows={10} {...field} />
-                  </FormControl>
                 </FormItem>
               )}
             />

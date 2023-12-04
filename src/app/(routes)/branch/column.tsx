@@ -148,6 +148,9 @@ export const columns: ColumnDef<Branch>[] = [
   },
   {
     id: "actions",
-    cell: () => <DataTableRowActions />,
+    cell: () => <DataTableRowActions actions={[
+      'edit',
+      'delete'
+    ]} />,
   },
 ]

@@ -1,22 +1,26 @@
 import { cn } from "~/lib/utils"
 import { Button } from "./ui/button"
-import { CBElogo, adminNavigation, navLinks } from "~/data"
+import { adminNavigation, navLinks, otherNavigation } from "~/data"
 import Link from "next/link"
 import Image from "next/image"
 import { getServerAuthSession } from "~/server/auth"
 import { LogoutButton } from "./buttons"
 import { Separator } from "./ui/separator"
+import CBElogo from "~/data"
 
 export async function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const session = await getServerAuthSession();
   return (
-    <div className={cn("pt-14 px-4", className)}>
-      <Link href={"/"} className="mt-8 mx-2">
-        <Image src={CBElogo} sizes="100vw" className="h-28 w-full" alt="cbe logo" />
-      </Link>
-      <div className="space-y-4 py-2">
+    <>
+      <div className="bg-brand-black">
+        <Link href={"/"} className="mt-8 mx-2">
+          <Image src={CBElogo} sizes="100vw" className="h-20 w-full" alt="cbe logo" />
+        </Link>
+        <h2 className="text-white">premium Intl card</h2>
+      </div>
+      <div className={cn("pt-4 px-4", className)}>
         <div className="px-1 py-2">
-          <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
+          <h2 className="mb-2 text-lg text-brand-white font-semibold tracking-tight">
             Links
           </h2>
           {navLinks.map((item) => (
@@ -31,8 +35,8 @@ export async function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement
         {
           session?.user.isAdmin && (
             <div className="px-1 py-2">
-              <Separator />
-              <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
+              <Separator className="bg-brand-black my-2" />
+              <h2 className="mb-2 text-brand-white text-lg font-semibold tracking-tight">
                 Admin Links
               </h2>
               {adminNavigation.map(
@@ -45,11 +49,25 @@ export async function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement
                   </Link>
                 )
               )}
+              <Separator className="bg-brand-black my-2" />
+              <h2 className="mb-2 text-brand-white text-lg font-semibold tracking-tight">
+                Other Links
+              </h2>
+              {
+                otherNavigation.map((item) => (
+                  <Link key={item.name} href={`/admin/${item.href}`} className="space-y-1">
+                    <Button variant="default" className="w-full my-1 justify-start">
+                      <item.icon className="text-brand-golden mx-1" />
+                      {item.name}
+                    </Button>
+                  </Link>
+                ))
+              }
               <LogoutButton />
             </div>
           )
         }
       </div>
-    </div>
+    </>
   )
 }

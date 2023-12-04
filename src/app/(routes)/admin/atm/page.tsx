@@ -5,6 +5,7 @@ import { getServerAuthSession } from "~/server/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "~/app/_components/ui/button";
+import { Plus } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "CBE ATM's",
@@ -115,7 +116,7 @@ export default async function BranchPage() {
         </div>
         <Link href={`atm/new`} className="space-y-1">
           <Button variant="default" className="w-44 my-1 justify-start">
-            Add New ATM
+            <Plus className="text-white mx-2 h-8 w-4" /> Add New ATM
           </Button>
         </Link>
       </div>
