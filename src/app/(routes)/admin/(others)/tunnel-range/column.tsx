@@ -3,9 +3,9 @@
 import { type ColumnDef } from "@tanstack/react-table"
 import { MapPinned } from "lucide-react"
 import { DataTableColumnHeader } from "~/app/_components/data-table/column-header"
-import { type Cluster } from "~/data/schema"
+import { type LANRange, } from "~/data/schema"
 
-export const columns: ColumnDef<Cluster>[] = [
+export const columns: ColumnDef<LANRange>[] = [
   {
     accessorKey: "id",
     header: ({ column }) => (
@@ -17,33 +17,60 @@ export const columns: ColumnDef<Cluster>[] = [
   },
 
   {
-    accessorKey: "name",
+    accessorKey: "clusterName",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Cluster Name" />
     ),
-    cell: ({ row }) => {
-      const name: string = row.getValue("name")
-      return (
-        <div className="flex min-w-[100px] items-center">
-          <span className="truncate capitalize font-medium">
-            group {name.split('-')[1]}
-          </span>
-        </div>
-      )
-    },
+    cell: ({ row }) => (
+      <div className="flex min-w-[100px] items-center">
+        <span className="truncate font-medium">
+          {row.getValue("clusterName")}
+        </span>
+      </div>
+    ),
     filterFn: "includesString"
   },
   {
-    accessorKey: "districts",
+    accessorKey: "lowerLimit",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Lower Limit" />
+    ),
+    cell: ({ row }) => (
+      <div className="flex space-x-1">
+        <span className="truncate font-medium">
+          {row.getValue("lowerLimit")}
+        </span>
+      </div>
+    ),
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: false
+  },
+  {
+    accessorKey: "upperLimit",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Upper Limit" />
+    ),
+    cell: ({ row }) => (
+      <div className="flex space-x-1">
+        <span className="truncate font-medium">
+          {row.getValue("upperLimit")}
+        </span>
+      </div>
+    ),
+
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: false
+  },
+
+  {
+    accessorKey: "District",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Districts" />
     ),
     cell: ({ row }) => {
-      const districts: [
-        {
-          name: string;
-        }
-      ] = row.getValue("districts")
+      const districts: [] = row.getValue("District")
       return (
         <>
           {districts.map((item, idx) => (
@@ -54,11 +81,15 @@ export const columns: ColumnDef<Cluster>[] = [
                 {item.name}
               </span>
             </div>
+
           ))}
         </>
       )
     },
-    filterFn: "includesString"
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: false,
+
   },
   {
     accessorKey: "createdBy",

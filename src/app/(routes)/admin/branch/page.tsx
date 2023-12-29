@@ -5,95 +5,41 @@ import { columns } from "./column";
 import { Button } from "~/app/_components/ui/button";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-
+import { api } from "~/trpc/server";
+import { districts } from "~/data";
 
 
 export const metadata: Metadata = {
   title: "branches",
   description: "watch all information related to branch",
 }
-export default function BranchPage() {
-
-  const branches = [{
-    id: 1,
-    name: "string",
-    district: "x",
-    wanIpAddress: " 102.610.204.128/25",
-    lanIpAddress: " 102.610.204.128/25",
-    tunnelIP_DR_ER11: " 102.610.204.128/25",
-    tunnelIP_DR_ER12: " 102.610.204.128/25",
-    tunnelIP_DC_ER21: " 102.610.204.128/25",
-    tunnelIP_DC_ER22: " 102.610.204.128/25",
-    createdBy: "string",
-    updatedAt: "string",
-  },
-  {
-    id: 2,
-    name: "string",
-    district: "arada",
-    wanIpAddress: " 102.610.204.128/25",
-    lanIpAddress: " 102.610.204.128/25",
-    tunnelIP_DR_ER11: " 102.610.204.128/25",
-    tunnelIP_DR_ER12: " 102.610.204.128/25",
-    tunnelIP_DC_ER21: " 102.610.204.128/25",
-    tunnelIP_DC_ER22: " 102.610.204.128/25",
-    createdBy: "string",
-    updatedAt: "string",
-  },
-  {
-    id: 3,
-    name: "string",
-    district: "arada",
-    wanIpAddress: " 102.610.204.128/25",
-    lanIpAddress: " 102.610.204.128/25",
-    tunnelIP_DR_ER11: " 102.610.204.128/25",
-    tunnelIP_DR_ER12: "78/25",
-    tunnelIP_DC_ER21: " 102.610.204.128/25",
-    tunnelIP_DC_ER22: " 102.610.204.128/25",
-    createdBy: "string",
-    updatedAt: "string",
-  }]
+export default async function BranchPage() {
+  const branches = await api.branch.getAll.query()
+  const formatted = branches.map(branch => {
+    return {
+      id: branch.id,
+      name: branch.name,
+      district: branch.district.name,
+      wanAddress: branch.wanAddress,
+      ipAddress: branch.ipWithTunnel?.lanIpAddress.ipAddress,
+      TunnelIP_DR_ER11: branch.ipWithTunnel?.tunnelIpAddress.TunnelIP_DR_ER11,
+      TunnelIP_DR_ER12: branch.ipWithTunnel?.tunnelIpAddress.TunnelIP_DR_ER12,
+      TunnelIP_DC_ER21: branch.ipWithTunnel?.tunnelIpAddress.TunnelIP_DC_ER21,
+      TunnelIP_DC_ER22: branch.ipWithTunnel?.tunnelIpAddress.TunnelIP_DC_ER22,
+      email: branch.createdBy.email,
+      updatedAt: branch.updatedAt
+    }
+  })
   const filterOps = [
     {
       title: "district",
-      options: [
-        {
-          value: "arada",
-          label: "ARADA",
-          // icon: QuestionMarkCircledIcon,
-        },
-        {
-          value: "x",
-          label: "X",
-          // icon: QuestionMarkCircledIcon,
-        },
-        {
-          value: "y",
-          label: "Y",
-          // icon: QuestionMarkCircledIcon,
-        },
-      ],
+      options: districts.map(item => {
+        return {
+          value: item.toLowerCase(),
+          label: item.toUpperCase(),
+        }
+      }),
     },
-    {
-      title: "name",
-      options: [
-        {
-          value: "x",
-          label: "X",
-          // icon: QuestionMarkCircledIcon,
-        },
-        {
-          value: "y",
-          label: "Y",
-          // icon: QuestionMarkCircledIcon,
-        },
-        {
-          value: "e",
-          label: "E",
-          // icon: QuestionMarkCircledIcon,
-        },
-      ]
-    }
   ]
   return (
     <div className="hidden h-full flex-1 flex-col space-y-8 p-4 md:flex">
@@ -110,7 +56,7 @@ export default function BranchPage() {
           </Button>
         </Link>
       </div>
-      <DataTable data={branches} columns={columns} colFilterable={filterOps} />
+      <DataTable data={formatted} columns={columns} colFilterable={filterOps} />
     </div>
 
   )

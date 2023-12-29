@@ -23,7 +23,7 @@ export const columns: ColumnDef<Branch>[] = [
     ),
     cell: ({ row }) => (
       <div className="flex space-x-1">
-        <span className="truncate font-medium">
+        <span className="truncate capitalize font-medium">
           {row.getValue("name")}
         </span>
       </div>
@@ -37,7 +37,7 @@ export const columns: ColumnDef<Branch>[] = [
     ),
     cell: ({ row }) => (
       <div className="flex space-x-1">
-        <span className="truncate font-medium">
+        <span className="truncate capitalize font-medium">
           {row.getValue("district")}
         </span>
       </div>
@@ -184,8 +184,11 @@ export const columns: ColumnDef<Branch>[] = [
   {
     id: "actions",
     cell: () => <DataTableRowActions actions={[
-      'edit',
-      'delete'
+      {
+        action: 'edit',
+        href: 'atm/edit'
+      }
+
     ]} />,
   },
 ]

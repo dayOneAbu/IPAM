@@ -17,7 +17,6 @@ import Link from "next/link"
 import { Textarea } from "~/app/_components/ui/textarea"
 import { SubmitButton } from "~/app/_components/buttons"
 import { useState } from "react"
-import { Switch } from "~/app/_components/ui/switch"
 import { RadioGroup, RadioGroupItem } from "~/app/_components/ui/radio-group"
 import { ChevronLeft } from "lucide-react"
 
@@ -46,7 +45,7 @@ export default function NewPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
     setTimeout(() => {
-      console.log(values)
+
       setIsSubmitting(false)
     }, 3000);
   }

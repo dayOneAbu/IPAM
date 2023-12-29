@@ -5,44 +5,57 @@ import { cn } from "~/lib/utils"
 import { Button } from "~/app/_components/ui/button"
 import { Input } from "~/app/_components/ui/input"
 import { FormProvider, useForm } from "react-hook-form"
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "~/app/_components/ui/form"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/app/_components/ui/select"
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/app/_components/ui/form"
 import Link from "next/link"
-import { Textarea } from "~/app/_components/ui/textarea"
 import { SubmitButton } from "~/app/_components/buttons"
 import { useState } from "react"
 import { RadioGroup, RadioGroupItem } from "~/app/_components/ui/radio-group"
 import { ChevronLeft } from "lucide-react"
+import { useToast } from "~/app/_components/ui/use-toast"
+import { api } from "~/trpc/react"
 
 
 const formSchema = z.object({
   email: z.string().email({ message: "Email is required " }),
   password: z.string({ required_error: "password is required" })
     .min(5, { message: "please provide strong password" }),
-  isAdmin: z.boolean(),
-
+  isAdmin: z.string(),
 })
 
-export default function NewPage() {
 
+export default function NewForm() {
+  const { toast } = useToast()
+  const utils = api.useUtils()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     progressive: true,
-    shouldFocusError: true
+    shouldFocusError: true,
   })
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+
+  const createUser = api.auth.createUser.useMutation({
+    onSuccess: (res) => {
+      toast({
+        title: `successful`,
+        description: `you have created user ${res.email} successfully`,
+      });
+      setIsSubmitting(false);
+      void utils.auth.getAllUser.invalidate()
+    },
+  });
+
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
-    setTimeout(() => {
-      console.log(values)
-      setIsSubmitting(false)
-    }, 3000);
+    createUser.mutate(values)
+
   }
   return (
     <div className="mx-4 py-6">
@@ -51,10 +64,12 @@ export default function NewPage() {
           <ChevronLeft className="text-white h-8 w-4" />Go Back
         </Button>
       </Link>
-      <div className="space-y-2 mx-6">
-        <h2 className="text-2xl font-bold tracking-tight">New User</h2>
-        <p className="text-muted-foreground">
-          you can create a new user and choose the account privilege
+      <div className="space-y-2 mt-4 mx-6">
+        <h2 className="text-2xl font-bold tracking-tight capitalize">
+          New User
+        </h2>
+        <p className="text-muted-foreground capitalize">
+          you can create a  user and choose the account privilege
         </p>
       </div>
       <FormProvider {...form}>
@@ -73,7 +88,6 @@ export default function NewPage() {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="password"
@@ -81,7 +95,7 @@ export default function NewPage() {
                 <FormItem>
                   <FormLabel>password</FormLabel>
                   <FormMessage />
-                  <FormControl>
+                  <FormControl >
                     <Input type="text" {...field} />
                   </FormControl>
                 </FormItem>
@@ -100,10 +114,9 @@ export default function NewPage() {
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
                     >
-
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value={true} />
+                          <RadioGroupItem value={"admin"} />
                         </FormControl>
                         <FormLabel className="font-normal">
                           Admin
@@ -111,9 +124,9 @@ export default function NewPage() {
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value={false} />
+                          <RadioGroupItem value={"non admin"} />
                         </FormControl>
-                        <FormLabel className="font-normal">Normal User</FormLabel>
+                        <FormLabel className="font-normal">NON Admin</FormLabel>
                       </FormItem>
                     </RadioGroup>
                   </FormControl>

@@ -5,7 +5,32 @@ import { DataTableColumnHeader } from "~/app/_components/data-table/column-heade
 import { DataTableRowActions } from "~/app/_components/data-table/row-actions"
 
 import { type Branch } from "~/data/schema"
-
+/**
+ * (alias) type Branch = {
+    id: number;
+    district: {
+        name: string;
+    };
+    name: string;
+    remark: string;
+    updatedAt: string;
+    ipWithTunnel: {
+        lanIpAddress: {
+            ipAddress: string;
+        };
+        tunnelIpAddress: {
+            TunnelIP_DR_ER11: string;
+            TunnelIP_DR_ER12: string;
+            TunnelIP_DC_ER21: string;
+            TunnelIP_DC_ER22: string;
+        };
+    };
+    createdBy: {
+        ...;
+    };
+    wanIpAddress: string;
+}
+ */
 export const columns: ColumnDef<Branch>[] = [
   {
     accessorKey: "id",
@@ -23,7 +48,7 @@ export const columns: ColumnDef<Branch>[] = [
     ),
     cell: ({ row }) => (
       <div className="flex space-x-1">
-        <span className="truncate font-medium">
+        <span className="truncate capitalize font-medium">
           {row.getValue("name")}
         </span>
       </div>
@@ -40,107 +65,108 @@ export const columns: ColumnDef<Branch>[] = [
     ),
     cell: ({ row }) => (
       <div className="flex space-x-1">
-        <span className="truncate font-medium">
+        <span className="truncate capitalize font-medium">
           {row.getValue("district")}
         </span>
       </div>
     ),
-
-    filterFn: "includesString"
-    // filterFn: (row, id, value) => {
-    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-    //   return value.includes(row.getValue(id))
-    // },
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: true,
   },
   {
-    accessorKey: "wanIpAddress",
+    accessorKey: "wanAddress",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="WAN-IP_Address" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
         <span className="truncate font-medium">
-          {row.getValue("wanIpAddress")}
+          {row.getValue("wanAddress")}
         </span>
       </div>
     ),
     filterFn: "includesString"
   },
   {
-    accessorKey: "lanIpAddress",
+    accessorKey: "ipAddress",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="LAN-IP_Address" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
         <span className="truncate font-medium">
-          {row.getValue("lanIpAddress")}
+          {row.getValue("ipAddress")}
         </span>
       </div>
     ),
     filterFn: "includesString"
   },
   {
-    accessorKey: "tunnelIP_DR_ER11",
+    accessorKey: "TunnelIP_DR_ER11",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="TunnelIP_DR_ER11" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
         <span className="truncate font-medium">
-          {row.getValue("tunnelIP_DR_ER11")}
+          {row.getValue("TunnelIP_DR_ER11")}
         </span>
       </div>
     ),
     filterFn: "includesString"
   },
   {
-    accessorKey: "tunnelIP_DR_ER12",
+    accessorKey: "TunnelIP_DR_ER12",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="TunnelIP_DR_ER12" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
         <span className="truncate font-medium">
-          {row.getValue("tunnelIP_DR_ER12")}
+          {row.getValue("TunnelIP_DR_ER12")}
         </span>
       </div>
     ),
     filterFn: "includesString"
   },
   {
-    accessorKey: "tunnelIP_DC_ER21",
+    accessorKey: "TunnelIP_DC_ER21",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="TunnelIP_DC_ER21" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
         <span className="truncate font-medium">
-          {row.getValue("tunnelIP_DC_ER21")}
+          {row.getValue("TunnelIP_DC_ER21")}
         </span>
       </div>
     ),
     filterFn: "includesString"
   },
   {
-    accessorKey: "tunnelIP_DC_ER22",
+    accessorKey: "TunnelIP_DC_ER22",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="TunnelIP_DC_ER22" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
         <span className="truncate font-medium">
-          {row.getValue("tunnelIP_DC_ER22")}
+          {row.getValue("TunnelIP_DC_ER22")}
         </span>
       </div>
     ),
     filterFn: "includesString"
   },
+
   {
     id: "actions",
     cell: () => <DataTableRowActions actions={[
-      'edit',
-      'delete'
+      {
+        action: 'edit',
+        href: 'branch/edit'
+      }
+
     ]} />,
   },
 ]

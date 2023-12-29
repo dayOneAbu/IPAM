@@ -23,7 +23,7 @@ export const columns: ColumnDef<Branch>[] = [
     ),
     cell: ({ row }) => (
       <div className="flex space-x-1">
-        <span className="truncate font-medium">
+        <span className="truncate capitalize font-medium">
           {row.getValue("name")}
         </span>
       </div>
@@ -37,120 +37,116 @@ export const columns: ColumnDef<Branch>[] = [
     ),
     cell: ({ row }) => (
       <div className="flex space-x-1">
-        <span className="truncate font-medium">
+        <span className="truncate capitalize font-medium">
           {row.getValue("district")}
         </span>
       </div>
     ),
-    filterFn: "includesString"
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: true,
   },
   {
-    accessorKey: "wanIpAddress",
+    accessorKey: "wanAddress",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="WAN-IP_Address" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
         <span className="truncate font-medium">
-          {row.getValue("wanIpAddress")}
+          {row.getValue("wanAddress")}
         </span>
       </div>
-    )
-    ,
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    ),
+    filterFn: "includesString"
   },
   {
-    accessorKey: "lanIpAddress",
+    accessorKey: "ipAddress",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="LAN-IP_Address" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
         <span className="truncate font-medium">
-          {row.getValue("lanIpAddress")}
+          {row.getValue("ipAddress")}
         </span>
       </div>
-    )
-    ,
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    ),
+    filterFn: "includesString"
   },
   {
-    accessorKey: "tunnelIP_DR_ER11",
+    accessorKey: "TunnelIP_DR_ER11",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="TunnelIP_DR_ER11" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
         <span className="truncate font-medium">
-          {row.getValue("tunnelIP_DR_ER11")}
+          {row.getValue("TunnelIP_DR_ER11")}
         </span>
       </div>
     ),
-    enableSorting: false
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: false,
   },
   {
-    accessorKey: "tunnelIP_DR_ER12",
+    accessorKey: "TunnelIP_DR_ER12",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="TunnelIP_DR_ER12" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
         <span className="truncate font-medium">
-          {row.getValue("tunnelIP_DR_ER12")}
+          {row.getValue("TunnelIP_DR_ER12")}
         </span>
       </div>
     ),
-    enableSorting: false
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: false,
   },
   {
-    accessorKey: "tunnelIP_DC_ER21",
+    accessorKey: "TunnelIP_DC_ER21",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="TunnelIP_DC_ER21" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
         <span className="truncate font-medium">
-          {row.getValue("tunnelIP_DC_ER21")}
+          {row.getValue("TunnelIP_DC_ER21")}
         </span>
       </div>
     ),
-    enableSorting: false
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: false,
   },
   {
-    accessorKey: "tunnelIP_DC_ER22",
+    accessorKey: "TunnelIP_DC_ER22",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="TunnelIP_DC_ER22" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
         <span className="truncate font-medium">
-          {row.getValue("tunnelIP_DC_ER22")}
+          {row.getValue("TunnelIP_DC_ER22")}
         </span>
       </div>
     ),
-    enableSorting: false
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: false,
   },
+
   {
     id: "actions",
     cell: () => <DataTableRowActions actions={[
-      'edit',
-      'delete'
+      {
+        action: 'edit',
+        href: 'branch/edit'
+      }
+
     ]} />,
   },
 ]

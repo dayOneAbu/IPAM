@@ -132,7 +132,7 @@ model LeasedBranchIps {
     authorizedBy    User         @relation(fields: [userId], references: [id])
     remark          String
     lanIpAddress    AllLANIps    @relation(fields: [allLANIpsId], references: [id])
-    allLANIpsId     Int
+    allLANIpsId     Int          @unique
     tunnelIpAddress AllTunnelIps @relation(fields: [tunnelIpId], references: [id])
     tunnelIpId      Int          @unique
     branch          Branch       @relation(fields: [assignedToId], references: [id])
@@ -145,11 +145,11 @@ model LeasedBranchIps {
 
 model LeasedATMIps {
     id              Int          @id @default(autoincrement())
-    assignedTo      String
+    // assignedTo      String
     authorizedBy    User         @relation(fields: [userId], references: [id])
     remark          String
     lanIpAddress    AllLANIps    @relation(fields: [allLANIpsId], references: [id])
-    allLANIpsId     Int
+    allLANIpsId     Int          @unique
     tunnelIpAddress AllTunnelIps @relation(fields: [tunnelIpId], references: [id])
     tunnelIpId      Int          @unique
     atm             ATM          @relation(fields: [atmId], references: [id])
@@ -161,13 +161,13 @@ model LeasedATMIps {
 }
 
 model AllLANIps {
-    id              Int               @id @default(autoincrement())
-    isTaken         Boolean           @default(false)
-    isReserved      Boolean
-    ipAddress       String
-    subnetMask      String
-    LeasedATMIps    LeasedATMIps[]
-    LeasedBranchIps LeasedBranchIps[]
+    id              Int              @id @default(autoincrement())
+    isTaken         Boolean          @default(false)
+    isReserved      Boolean          @default(false)
+    isFlagged       Boolean          @default(false)
+    ipAddress       String           @unique
+    LeasedBranchIps LeasedBranchIps?
+    LeasedATMIps    LeasedATMIps?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -177,10 +177,11 @@ model AllTunnelIps {
     id               Int              @id @default(autoincrement())
     isTaken          Boolean          @default(false)
     isReserved       Boolean          @default(false)
-    TunnelIP_DR_ER11 String
-    TunnelIP_DR_ER12 String
-    TunnelIP_DC_ER21 String
-    TunnelIP_DC_ER22 String
+    isFlagged        Boolean          @default(false)
+    TunnelIP_DR_ER11 String           @unique
+    TunnelIP_DR_ER12 String           @unique
+    TunnelIP_DC_ER21 String           @unique
+    TunnelIP_DC_ER22 String           @unique
     LeasedBranchIps  LeasedBranchIps?
     LeasedATMIps     LeasedATMIps?
 

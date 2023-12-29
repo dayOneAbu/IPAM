@@ -1,13 +1,56 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { hash } from "bcryptjs";
 import { db } from "~/server/db";
 import { clusters, lanRange, tunnelRange } from "./data";
+// import { atm_lanIntersection, branch_lanIntersection } from "./data/lan";
+import tunnelInfo from "./data/tunnelInfo";
+import atm_lanIntersection from "./data/atm-by-br-int.json";
+import branch_lanIntersection from "./data/by-lan-int.json";
 
-export const generatedLanIps = () => {
-  /* */
+export const generateAndSeedLanIps = () => {
+  lanRange.map(async (lan) => {
+    if (lan.clusterName == "G-12") {
+      for (let x = lan.lowerLimit; x <= lan.upperLimit; x++) {
+        for (let y = 0; y <= 254; y++) {
+          for (let z = 0; z <= 248; z += 8) {
+            await db.allLANIps.create({
+              data: {
+                ipAddress: `10.${x}.${y}.${z}`,
+              },
+            });
+          }
+        }
+      }
+    } else {
+      for (let x = lan.lowerLimit; x <= lan.upperLimit; x++) {
+        for (let y = 0; y <= 254; y++) {
+          await db.allLANIps.create({
+            data: {
+              ipAddress: `10.${x}.${y}.${1}`,
+            },
+          });
+        }
+      }
+    }
+  });
 };
-export async function generatedTunnelIps() {
-  /** */
+export function generateAndSeedTunnelIps() {
+  tunnelRange.map(async (tunnel) => {
+    for (let x = tunnel.lowerLimit; x + 12 <= tunnel.upperLimit; x++) {
+      for (let z = 0; z < 255; z++) {
+        await db.allTunnelIps.create({
+          data: {
+            TunnelIP_DR_ER11: `10.220.${x}.${z}`,
+            TunnelIP_DR_ER12: `10.220.${x + 4}.${z}`,
+            TunnelIP_DC_ER21: `10.220.${x + 8}.${z}`,
+            TunnelIP_DC_ER22: `10.220.${x + 12}.${z}`,
+          },
+        });
+      }
+    }
+  });
 }
+
 export async function seedTunnelRange({
   item,
   userId,
@@ -15,23 +58,23 @@ export async function seedTunnelRange({
   userId: number;
   item: {
     clusterName: string;
-    lowerLimit: string;
-    upperLimit: string;
+    lowerLimit: number;
+    upperLimit: number;
     districts: string[];
   };
 }) {
   return await db.tunnelRange.create({
     data: {
-      clusterName: item.clusterName,
-      lowerLimit: item.lowerLimit,
-      upperLimit: item.upperLimit,
+      clusterName: item.clusterName.toLowerCase(),
+      lowerLimit: `10.220.${item.lowerLimit}.0`,
+      upperLimit: `10.220.${item.upperLimit}.254`,
       createdBy: {
         connect: {
           id: userId,
         },
       },
       District: {
-        connect: item.districts.map((d) => ({ name: d })),
+        connect: item.districts.map((d) => ({ name: d.toLowerCase() })),
       },
     },
   });
@@ -44,23 +87,23 @@ export async function seedLanRange({
   userId: number;
   item: {
     clusterName: string;
-    lowerLimit: string;
-    upperLimit: string;
+    lowerLimit: number;
+    upperLimit: number;
     districts: string[];
   };
 }) {
   return await db.lANRange.create({
     data: {
-      clusterName: item.clusterName,
-      lowerLimit: item.lowerLimit,
-      upperLimit: item.upperLimit,
+      clusterName: item.clusterName.toLowerCase(),
+      lowerLimit: `10.${item.lowerLimit}.0.0`,
+      upperLimit: `10.${item.upperLimit}.0.0`,
       createdBy: {
         connect: {
           id: userId,
         },
       },
       District: {
-        connect: item.districts.map((d) => ({ name: d })),
+        connect: item.districts.map((d) => ({ name: d.toLowerCase() })),
       },
     },
   });
@@ -74,7 +117,7 @@ export async function seedClusters({
 }) {
   return await db.cluster.create({
     data: {
-      name: cName,
+      name: cName.toLowerCase(),
       createdBy: {
         connect: {
           id: userId,
@@ -94,7 +137,7 @@ export async function seedDistrict({
 }) {
   return await db.district.create({
     data: {
-      name: district,
+      name: district.toLowerCase(),
       createdBy: {
         connect: {
           id: userId,
@@ -108,7 +151,7 @@ export async function seedDistrict({
     },
   });
 }
-async function seedTopAdmin() {
+export async function seedTopAdmin() {
   const user = await db.user.upsert({
     where: {
       email: "admin@cbe.com.et",
@@ -129,10 +172,158 @@ async function seedTopAdmin() {
   }
   return user;
 }
+
+export async function seedBranch_LeasedBranchIps({
+  userId,
+  item,
+  Tunnel_IP_DC_ER21,
+}: {
+  userId: number;
+  item: {
+    Branch_Name: string;
+    LAN_Address: string;
+    District_Name: string;
+    WAN_Address: string;
+  };
+  Tunnel_IP_DC_ER21: string;
+}) {
+  try {
+    const result = await db.branch.create({
+      data: {
+        name: item.Branch_Name.toLowerCase(),
+        remark: "this is initial seed data",
+        wanAddress: item.WAN_Address ? item.WAN_Address.toLowerCase() : "",
+        ipWithTunnel: {
+          create: {
+            isReserved: false,
+            isTaken: true,
+            authorizedBy: {
+              connect: {
+                id: userId,
+              },
+            },
+            remark: "this is initial seed data",
+            lanIpAddress: {
+              connect: {
+                ipAddress: item.LAN_Address,
+              },
+            },
+            tunnelIpAddress: {
+              connect: {
+                TunnelIP_DC_ER21: Tunnel_IP_DC_ER21,
+              },
+            },
+          },
+        },
+        createdBy: {
+          connect: {
+            id: userId,
+          },
+        },
+        district: {
+          connect: {
+            name: item.District_Name.toLowerCase(),
+          },
+        },
+      },
+    });
+    console.log("````````````first````````````");
+    console.log("inserted", result.name);
+    console.log("````````````first````````````");
+  } catch (error) {
+    console.log(error);
+  }
+}
+export function seedATM_LeasedATMIps({ userId }: { userId: number }) {
+  atm_lanIntersection.map(async (atm) => {
+    if (
+      atm.District_Name.toLowerCase() == "head office" ||
+      atm.District_Name.toLowerCase() == "shira"
+    ) {
+      return;
+    } else if (atm.WAN_Address == null) {
+      return;
+    } else {
+      return await db.aTM.create({
+        data: {
+          name: "atm.Branch_Name.toLowerCase()",
+          remark: "this is initial seed data",
+          wanAddress: "atm.WAN_Address.toLowerCase()",
+          loopBackAddress: "",
+          isOutlet: false,
+          LeasedATMIps: {
+            create: {
+              // atm: {
+              //   connect: {
+              //     name: "",
+              //   },
+              // },
+              remark: "this is initial seed data",
+              authorizedBy: {
+                connect: {
+                  id: userId,
+                },
+              },
+              lanIpAddress: {
+                connect: {
+                  ipAddress: "atm.LAN_Address",
+                },
+              },
+              tunnelIpAddress: {
+                connect: {
+                  id: 1,
+                },
+              },
+            },
+          },
+
+          // ipWithTunnel: {
+          //   create: {
+          //     isReserved: false,
+          //     isTaken: true,
+          //     authorizedBy: {
+          //       connect: {
+          //         id: userId,
+          //       },
+          //     },
+          //     remark: "this is initial seed data",
+          //     lanIpAddress: {
+          //       connect: {
+          //         ipAddress: atm.LAN_Address,
+          //       },
+          //     },
+          // tunnelIpAddress: {
+          //   connect: {
+          //     id:1
+          //   }
+          // }
+          //     // branch: {
+          //     //   connect: {
+          //     //     name: atm.Branch_Name.toLowerCase(),
+          //     //   },
+          //     // },
+          //   },
+          // },
+          createdBy: {
+            connect: {
+              id: userId,
+            },
+          },
+          district: {
+            connect: {
+              name: atm.District_Name.toLowerCase(),
+            },
+          },
+        },
+      });
+    }
+  });
+}
+
 async function seed() {
-  //step1: seed Cluster and district
+  // //step1: seed Cluster and district
   const admin = await seedTopAdmin();
-  //step2: seed Cluster and district
+  // //step2: seed Cluster and district
   // clusters.map(async (item) => {
   //   const newCluster = await seedClusters({
   //     cName: item.name,
@@ -146,14 +337,58 @@ async function seed() {
   //     });
   //   });
   // });
-  //step3: seed Tunnel range
-  tunnelRange.map(async (item) => {
-    await seedTunnelRange({ userId: admin.id, item });
-  });
-  //step4: seed Tunnel range
-  lanRange.map(async (item) => {
-    await seedLanRange({ userId: admin.id, item });
-  });
+  // //step3: seed Tunnel range
+  // tunnelRange.map(async (item) => {
+  //   await seedTunnelRange({ userId: admin.id, item });
+  // });
+  // //step4: seed Tunnel range
+  // lanRange.map(async (item) => {
+  //   await seedLanRange({ userId: admin.id, item });
+  // });
+  // //step5: generateAndSeedLanIps
+  // generateAndSeedLanIps();
+  // //step6: generateAndSeedTunnelIps
+  // generateAndSeedTunnelIps();
+  // //step7: seed branch's and seed LeasedBranchIps
+    branch_lanIntersection.map(async (branch) => {
+      if (
+        branch.District_Name.toLowerCase() == "head office" ||
+        branch.District_Name.toLowerCase() == "shira"
+      ) {
+        return;
+      } else if (
+        branch.LAN_Address == undefined ||
+        branch.WAN_Address == undefined
+      ) {
+        return;
+      } else {
+        const tunnel_res = tunnelInfo.find((item) => {
+          if (item.Branch_Name == null || item.Branch_Name == undefined) {
+            return null;
+          } else if (
+            item.Branch_Name.toLowerCase() == branch.Branch_Name.toLowerCase()
+          ) {
+            return item;
+          } else {
+            return null;
+          }
+        });
+        if (tunnel_res?.Tunnel_IP_DC_ER21 == undefined) {
+          return;
+        } else {
+          await seedBranch_LeasedBranchIps({
+            item: branch,
+            Tunnel_IP_DC_ER21: tunnel_res.Tunnel_IP_DC_ER21,
+            userId: admin.id,
+          });
+        }
+      }
+    }),
+
+
+  // seedBranch_LeasedBranchIps({ userId: admin.id });
+  // //step8: seed LeasedATMIps
+  // seedATM_LeasedATMIps({ userId: admin.id });
 }
 
-void seed();
+void seed()

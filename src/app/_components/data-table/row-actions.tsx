@@ -10,11 +10,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
+import Link from "next/link"
 
 
 
 export function DataTableRowActions({ actions }: {
-  actions: string[]
+  actions: [{
+    href: string,
+    action: string
+  }]
 }) {
   return (
     <DropdownMenu>
@@ -28,12 +32,14 @@ export function DataTableRowActions({ actions }: {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        {actions.map(action => (
-          <span key={action}>
-            <DropdownMenuItem >
-              {action}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
+        {actions.map(item => (
+          <span key={item.action}>
+            <Link href={item.href} >
+              <DropdownMenuItem >
+                {item.action}
+                <DropdownMenuSeparator />
+              </DropdownMenuItem>
+            </Link>
           </span>
         ))}
       </DropdownMenuContent>

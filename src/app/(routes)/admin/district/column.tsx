@@ -1,12 +1,12 @@
 "use client"
 
 import { type ColumnDef } from "@tanstack/react-table"
+import { MoveHorizontal } from "lucide-react"
 import { DataTableColumnHeader } from "~/app/_components/data-table/column-header"
 import { DataTableRowActions } from "~/app/_components/data-table/row-actions"
+import { type District } from "~/data/schema"
 
-import { type Branch } from "~/data/schema"
-
-export const columns: ColumnDef<Branch>[] = [
+export const columns: ColumnDef<District>[] = [
   {
     accessorKey: "id",
     header: ({ column }) => (
@@ -19,11 +19,11 @@ export const columns: ColumnDef<Branch>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="District Name" />
+      <DataTableColumnHeader column={column} title="Name" />
     ),
     cell: ({ row }) => (
       <div className="flex space-x-1">
-        <span className="truncate font-medium">
+        <span className="truncate capitalize font-medium">
           {row.getValue("name")}
         </span>
       </div>
@@ -42,8 +42,9 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
-
-    filterFn: "includesString"
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: true,
   },
   {
     accessorKey: "ATM",
@@ -57,83 +58,89 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
-    filterFn: "includesString"
-  },
-  {
-    accessorKey: "updatedAt",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Last Update" />
-    ),
-    cell: ({ row }) => (
-      <div className="flex min-w-[100px] items-center">
-        <span className="truncate font-medium">
-          {row.getValue("updatedAt")}
-        </span>
-      </div>
-    ),
     enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: true,
+  },
+
+  {
+    accessorKey: "usableTunnelRange",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Tunnel-Range" />
+    ),
+    cell: ({ row }) => {
+      const usableTunnelRange: {
+        lowerLimit: string
+        upperLimit: string
+      } = row.getValue("usableTunnelRange")
+      return (
+        <div className="flex min-w-[100px] items-center">
+          <p className="truncate font-medium">
+            <span className="flex items-center justify-between">
+              {usableTunnelRange.lowerLimit}
+              <MoveHorizontal className="h-6 w-8 mx-2 text-brand-purple" />
+              {usableTunnelRange.upperLimit}
+            </span>
+          </p>
+        </div>
+      )
+    },
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
     enableSorting: false,
   },
-  // {
-  //   accessorKey: "usableTunnel",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="TunnelIP_DR_ER11" />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div className="flex min-w-[100px] items-center">
-  //       <span className="truncate font-medium">
-  //         {row.getValue("usableTunnel")}
-  //       </span>
-  //     </div>
-  //   ),
-  //   filterFn: "includesString"
-  // },
-  // {
-  //   accessorKey: "tunnelIP_DR_ER12",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="TunnelIP_DR_ER12" />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div className="flex min-w-[100px] items-center">
-  //       <span className="truncate font-medium">
-  //         {row.getValue("tunnelIP_DR_ER12")}
-  //       </span>
-  //     </div>
-  //   ),
-  //   filterFn: "includesString"
-  // },
-  // {
-  //   accessorKey: "tunnelIP_DC_ER21",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="TunnelIP_DC_ER21" />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div className="flex min-w-[100px] items-center">
-  //       <span className="truncate font-medium">
-  //         {row.getValue("tunnelIP_DC_ER21")}
-  //       </span>
-  //     </div>
-  //   ),
-  //   filterFn: "includesString"
-  // },
-  // {
-  //   accessorKey: "tunnelIP_DC_ER22",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="TunnelIP_DC_ER22" />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div className="flex min-w-[100px] items-center">
-  //       <span className="truncate font-medium">
-  //         {row.getValue("tunnelIP_DC_ER22")}
-  //       </span>
-  //     </div>
-  //   ),
-  //   filterFn: "includesString"
-  // },
+  {
+    accessorKey: "usableLANRange",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="LAN-Range" />
+    ),
+    cell: ({ row }) => {
+      const usableLANRange: {
+        lowerLimit: string
+        upperLimit: string
+      } = row.getValue("usableLANRange")
+      return (
+        <div className="flex min-w-[100px] items-center">
+          <p className="truncate font-medium">
+            <span className="flex items-center justify-between">
+              {usableLANRange.lowerLimit}
+              <MoveHorizontal className="h-6 w-8 mx-2 text-brand-purple" />
+              {usableLANRange.upperLimit}
+            </span>
+          </p>
+        </div>
+      )
+    },
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: false,
+  },
+  {
+    accessorKey: "email",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Created-By" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex min-w-[100px] items-center">
+          <span className="truncate font-medium">
+            {row.getValue("email")}
+          </span>
+        </div>
+      )
+    },
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: false,
+  },
   {
     id: "actions",
     cell: () => <DataTableRowActions actions={[
-      'edit',
+      {
+        action: 'edit',
+        href: 'district/edit'
+      }
+
     ]} />,
   },
 ]

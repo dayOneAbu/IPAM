@@ -5,86 +5,39 @@ import { columns } from "./column";
 import { Button } from "~/app/_components/ui/button";
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { api } from "~/trpc/server";
 
 
 
 export const metadata: Metadata = {
   title: "users",
 }
-export default function BranchPage() {
-
-  const users = [{
-    id: 3,
-    email: "string@te.com",
-    isAdmin: false,
-    branchCreated: "245",
-    atmCreated: "1145",
-    districtCreated: "32",
-    clusterCreated: "14",
-    updatedAt: "12/4/2019",
-
-  },
-  {
-    id: 1,
-    email: "string@te.com",
-    isAdmin: false,
-    branchCreated: "245",
-    atmCreated: "1145",
-    districtCreated: "32",
-    clusterCreated: "14",
-    updatedAt: "12/4/2019",
-  },
-  {
-    id: 2,
-    email: "string@te.com",
-    isAdmin: false,
-    branchCreated: "245",
-    atmCreated: "1145",
-    districtCreated: "32",
-    clusterCreated: "14",
-    updatedAt: "12/4/2019",
-  }]
+export default async function BranchPage() {
+  const users = await api.auth.getAllUser.query()
+  const filtered = users.map(user => {
+    return {
+      id: user.id,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      branchCreated: user._count.branchCreated,
+      atmCreated: user._count.atmCreated,
+      districtCreated: user._count.districtCreated,
+    }
+  })
   const filterOps = [
     {
-      title: "district",
+      title: "isAdmin",
       options: [
         {
-          value: "arada",
-          label: "ARADA",
-          // icon: QuestionMarkCircledIcon,
+          value: true,
+          label: "Admin",
         },
         {
-          value: "x",
-          label: "X",
-          // icon: QuestionMarkCircledIcon,
-        },
-        {
-          value: "y",
-          label: "Y",
-          // icon: QuestionMarkCircledIcon,
+          value: false,
+          label: "NON Admin",
         },
       ],
     },
-    {
-      title: "name",
-      options: [
-        {
-          value: "x",
-          label: "X",
-          // icon: QuestionMarkCircledIcon,
-        },
-        {
-          value: "y",
-          label: "Y",
-          // icon: QuestionMarkCircledIcon,
-        },
-        {
-          value: "e",
-          label: "E",
-          // icon: QuestionMarkCircledIcon,
-        },
-      ]
-    }
   ]
   return (
     <div className="hidden h-full flex-1 flex-col space-y-8 p-4 md:flex">
@@ -101,7 +54,7 @@ export default function BranchPage() {
           </Button>
         </Link>
       </div>
-      <DataTable data={users} columns={columns} colFilterable={filterOps} />
+      <DataTable data={filtered} columns={columns} colFilterable={filterOps} />
     </div>
 
   )

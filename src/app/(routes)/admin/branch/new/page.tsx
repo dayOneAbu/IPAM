@@ -43,7 +43,7 @@ export default function NewPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
     setTimeout(() => {
-      console.log(values)
+
       setIsSubmitting(false)
     }, 3000);
   }

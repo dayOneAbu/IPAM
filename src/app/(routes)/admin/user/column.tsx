@@ -4,9 +4,9 @@ import { type ColumnDef } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "~/app/_components/data-table/column-header"
 import { DataTableRowActions } from "~/app/_components/data-table/row-actions"
 
-import { type Branch } from "~/data/schema"
+import { type User } from "~/data/schema"
 
-export const columns: ColumnDef<Branch>[] = [
+export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "id",
     header: ({ column }) => (
@@ -28,7 +28,10 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
     filterFn: "includesString"
+
   },
   {
     accessorKey: "isAdmin",
@@ -38,17 +41,18 @@ export const columns: ColumnDef<Branch>[] = [
     cell: ({ row }) => (
       <div className="flex space-x-1">
         <span className="truncate font-medium">
-          {row.getValue("isAdmin") ? "Admin" : "Normal User"}
+          {row.getValue("isAdmin") ? "Admin" : "NON Admin"}
         </span>
       </div>
     ),
-
-    filterFn: "includesString"
+    enableColumnFilter: true,
+    enableGlobalFilter: false,
+    filterFn: "equals",
   },
   {
     accessorKey: "branchCreated",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="branch's Created" />
+      <DataTableColumnHeader column={column} title="Branch's Created" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
@@ -57,7 +61,9 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
-    filterFn: "includesString"
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: true
   },
   {
     accessorKey: "atmCreated",
@@ -71,7 +77,9 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
-    filterFn: "includesString"
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: true
   },
   {
     accessorKey: "districtCreated",
@@ -85,28 +93,18 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
-    filterFn: "includesString"
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: true
   },
-  {
-    accessorKey: "clusterCreated",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Cluster Created" />
-    ),
-    cell: ({ row }) => (
-      <div className="flex min-w-[100px] items-center">
-        <span className="truncate font-medium">
-          {row.getValue("clusterCreated")}
-        </span>
-      </div>
-    ),
-    filterFn: "includesString"
-  },
-
   {
     id: "actions",
-    cell: () => <DataTableRowActions actions={[
-      'edit',
-      'delete'
+    cell: ({ row }) => <DataTableRowActions actions={[
+      {
+        action: 'edit',
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        href: `user/${row.getValue("email")}-edit`
+      }
     ]} />,
   },
 ]

@@ -1,9 +1,9 @@
 import "~/styles/globals.css";
 import { cookies } from "next/headers";
-
 import { TRPCReactProvider } from "~/trpc/react";
 import { Sidebar } from "./_components/navbar";
 import { getServerAuthSession } from "~/server/auth";
+import { Toaster } from "./_components/ui/toaster";
 
 export const metadata = {
   title: "CBE Watch App",
@@ -23,10 +23,11 @@ export default async function RootLayout({
         <TRPCReactProvider cookies={cookies().toString()}>
           <main className="min-h-screen grid grid-cols-8">
             <div className="col-span-1 bg-brand-purple">
-              {session && <Sidebar />}
+              {session && <Sidebar session={session} />}
             </div>
             <div className="col-span-7 flex flex-col justify-start">{children}</div>
           </main>
+          <Toaster />
         </TRPCReactProvider>
       </body>
     </html>
