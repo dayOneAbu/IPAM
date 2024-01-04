@@ -1,6 +1,6 @@
 export const clusters = [
   {
-    name: "G-1",
+    name: "Group-1",
     districts: [
       "ARADA",
       "AMBO",
@@ -17,23 +17,23 @@ export const clusters = [
     ],
   },
   {
-    name: "G-2",
+    name: "Group-2",
     districts: ["DESSIE", "WOLDIYA", "SEMERA", "MEKELE", "SHIRE"],
   },
   {
-    name: "G-3",
+    name: "Group-3",
     districts: ["ADAMA", "ASSELA"],
   },
   {
-    name: "G-4",
+    name: "Group-4",
     districts: ["DIRE DAWA", "JIJIGA"],
   },
   {
-    name: "G-5",
+    name: "Group-5",
     districts: [],
   },
   {
-    name: "G-6",
+    name: "Group-6",
     districts: [
       "HAWASSA",
       "DILLA",
@@ -44,33 +44,33 @@ export const clusters = [
     ],
   },
   {
-    name: "G-7",
+    name: "Group-7",
     districts: ["JIMMA", "METTU"],
   },
   {
-    name: "G-8",
+    name: "Group-8",
     districts: ["NEKEMTE"],
   },
   {
-    name: "G-9",
+    name: "Group-9",
     districts: ["BAHIR DAR", "DEBRE MARKOS", "GONDER"],
   },
   {
-    name: "G-10",
+    name: "Group-10",
     districts: [],
   },
   {
-    name: "G-11",
+    name: "Group-11",
     districts: [],
   },
   {
-    name: "G-12",
+    name: "Group-12",
     districts: ["ATMS"],
   },
 ];
 export const tunnelRange = [
   {
-    clusterName: "G-1",
+    clusterName: "Group-1",
     // lowerLimit: 220,
     // upperLimit: 220.15.254",
     lowerLimit: 0,
@@ -78,91 +78,91 @@ export const tunnelRange = [
     districts: ["AMBO", "ARADA", "YEKA", "Gulele"],
   },
   {
-    clusterName: "G-1",
+    clusterName: "Group-1",
     lowerLimit: 16,
     upperLimit: 31,
     districts: ["BOLE", "MEGENAGNA", "DEBRE BIRHAN"],
   },
   {
-    clusterName: "G-1",
+    clusterName: "Group-1",
     lowerLimit: 32,
     upperLimit: 47,
     districts: ["KIRKOS", "NIFAS SILK", "KALITY"],
   },
   {
-    clusterName: "G-1",
+    clusterName: "Group-1",
     lowerLimit: 48,
     upperLimit: 63,
     districts: ["MERKATO", "KOLFE"],
   },
   {
-    clusterName: "G-3",
+    clusterName: "Group-3",
     lowerLimit: 64,
     upperLimit: 79,
     districts: ["ADAMA", "ASSELA"],
   },
   {
-    clusterName: "G-9",
+    clusterName: "Group-9",
     lowerLimit: 80,
     upperLimit: 95,
     districts: ["BAHIR DAR", "DEBRE MARKOS"],
   },
   {
-    clusterName: "G-9",
+    clusterName: "Group-9",
     lowerLimit: 128,
     upperLimit: 143,
     districts: ["GONDER"],
   },
   {
-    clusterName: "G-2",
+    clusterName: "Group-2",
     lowerLimit: 96,
     upperLimit: 111,
     districts: ["DESSIE", "WOLDIYA", "SEMERA"],
   },
   {
-    clusterName: "G-2",
+    clusterName: "Group-2",
     lowerLimit: 176,
     upperLimit: 191,
     districts: ["MEKELE", "SHIRE"],
   },
   {
-    clusterName: "G-4",
+    clusterName: "Group-4",
     lowerLimit: 112,
     upperLimit: 127,
     districts: ["DIRE DAWA", "JIJIGA"],
   },
   {
-    clusterName: "G-6",
+    clusterName: "Group-6",
     lowerLimit: 144,
     upperLimit: 159,
     districts: ["HAWASSA", "DILLA"],
   },
   {
-    clusterName: "G-6",
+    clusterName: "Group-6",
     lowerLimit: 208,
     upperLimit: 223,
     districts: ["SHASHEMENE", "BALE ROBE"],
   },
   {
-    clusterName: "G-6",
+    clusterName: "Group-6",
     lowerLimit: 224,
     upperLimit: 239,
     districts: ["WELAYTA SODO", "HOSSANA"],
   },
   {
-    clusterName: "G-7",
+    clusterName: "Group-7",
     lowerLimit: 160,
     upperLimit: 175,
     districts: ["JIMMA", "METTU"],
   },
   {
-    clusterName: "G-8",
+    clusterName: "Group-8",
     lowerLimit: 192,
     upperLimit: 207,
     districts: ["NEKEMTE"],
   },
   {
-    clusterName: "G-12",
+    clusterName: "Group-12",
     lowerLimit: 240,
     upperLimit: 255,
     districts: ["ATMS"],
@@ -170,7 +170,7 @@ export const tunnelRange = [
 ];
 export const lanRange = [
   {
-    clusterName: "G-1",
+    clusterName: "Group-1",
     lowerLimit: 32,
     upperLimit: 47,
     districts: [
@@ -189,31 +189,31 @@ export const lanRange = [
     ],
   },
   {
-    clusterName: "G-3",
+    clusterName: "Group-3",
     lowerLimit: 64,
     upperLimit: 79,
     districts: ["ADAMA", "ASSELA"],
   },
   {
-    clusterName: "G-9",
+    clusterName: "Group-9",
     lowerLimit: 160,
     upperLimit: 175,
     districts: ["BAHIR DAR", "DEBRE MARKOS", "GONDER"],
   },
   {
-    clusterName: "G-2",
+    clusterName: "Group-2",
     lowerLimit: 48,
     upperLimit: 63,
     districts: ["DESSIE", "WOLDIYA", "SEMERA", "MEKELE", "SHIRE"],
   },
   {
-    clusterName: "G-4",
+    clusterName: "Group-4",
     lowerLimit: 80,
     upperLimit: 95,
     districts: ["DIRE DAWA", "JIJIGA"],
   },
   {
-    clusterName: "G-6",
+    clusterName: "Group-6",
     lowerLimit: 112,
     upperLimit: 127,
     districts: [
@@ -226,37 +226,37 @@ export const lanRange = [
     ],
   },
   {
-    clusterName: "G-7",
+    clusterName: "Group-7",
     lowerLimit: 128,
     upperLimit: 143,
     districts: ["JIMMA", "METTU"],
   },
   {
-    clusterName: "G-8",
+    clusterName: "Group-8",
     lowerLimit: 144,
     upperLimit: 159,
     districts: ["NEKEMTE"],
   },
   {
-    clusterName: "G-10",
+    clusterName: "Group-10",
     lowerLimit: 176,
     upperLimit: 191,
     districts: [],
   },
   {
-    clusterName: "G-11",
+    clusterName: "Group-11",
     lowerLimit: 192,
     upperLimit: 207,
     districts: [],
   },
   {
-    clusterName: "G-5",
+    clusterName: "Group-5",
     lowerLimit: 96,
     upperLimit: 111,
     districts: [],
   },
   {
-    clusterName: "G-12",
+    clusterName: "Group-12",
     lowerLimit: 208,
     upperLimit: 208,
     districts: ["ATMS"],

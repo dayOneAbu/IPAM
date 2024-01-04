@@ -2,11 +2,12 @@
 import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { api } from "~/trpc/react"
 import { usePathname } from "next/navigation"
-import NewForm from "./NewForm"
+import NewBranch from "./NewForm"
 import EditForm from "./EditForm"
 import { PopoverDialog } from "~/app/_components/popover"
 import { toast } from "~/app/_components/ui/use-toast";
 import { useState } from "react";
+
 
 
 export default function NewPage() {
@@ -34,22 +35,23 @@ export default function NewPage() {
   })
 
   if (intent.split('/').pop() == 'new') {
-    const res = api.district.preloadData.useQuery()
-    return res.data != undefined && <NewForm preloadData={res.data} />
+    const res = api.district.getAll.useQuery()
+
+    return res.data != undefined && <NewBranch districts={res.data} />
   } else if (intent.split('/').pop() == 'edit') {
-    const res = api.district.preloadData.useQuery()
+    const res = api.district.getAll.useQuery()
     if (id == null) {
       return notFound();
     }
-    const district = api.district.getOne.useQuery({ id: parseInt(id) })
-    if (res.data != undefined && district.data != undefined) {
-      return <EditForm district={district.data} preloadData={res.data} />
+    const branch = api.branch.getOne.useQuery({ id: parseInt(id) })
+    if (res.data != undefined && branch.data != undefined) {
+      return <EditForm districts={res.data} branch={branch.data} />
     }
   } else if (intent.split('/').pop() == 'delete') {
 
     return <PopoverDialog
-      description="Deleting this district will remove it form database completely, please make sure you are not deleting district with branch or ATM located"
-      message='Are You Sure About Deleting This District'
+      description="Deleting this branch will remove it form database completely and release the LAN & Tunnel Address, please make sure you are not deleting branch which is currently up & running!"
+      message='Are You Sure About Deleting This branch'
       onCancel={() => router.back()}
       onConfirm={() => {
         id && remove.mutate({ id: parseInt(id) })

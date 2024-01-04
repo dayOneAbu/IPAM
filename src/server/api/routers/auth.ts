@@ -97,6 +97,7 @@ export const authRouter = createTRPCRouter({
         id: true,
         email: true,
         isAdmin: true,
+        updatedAt: true,
         _count: {
           select: {
             branchCreated: true,
@@ -104,6 +105,9 @@ export const authRouter = createTRPCRouter({
             districtCreated: true,
           },
         },
+      },
+      orderBy: {
+        updatedAt: "desc",
       },
     });
     if (!user) {
@@ -138,5 +142,61 @@ export const authRouter = createTRPCRouter({
         });
       }
       return user;
+    }),
+  delete: protectedProcedure
+    .input(
+      z.object({
+        email: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.db.user.findUnique({
+        where: {
+          email: input.email,
+        },
+        select: {
+          email: true,
+          id: true,
+          _count: {
+            select: {
+              branchCreated: true,
+              atmCreated: true,
+              clusterCreated: true,
+              districtCreated: true,
+              LANRange: true,
+              LeasedATMIps: true,
+              tunnelRange: true,
+              LeasedBranchIps: true,
+            },
+          },
+        },
+      });
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "couldn't find what you are looking for!",
+        });
+      } else if (
+        user?._count.branchCreated > 0 ||
+        user?._count.atmCreated > 0 ||
+        user?._count.districtCreated > 0 ||
+        user?._count.LeasedATMIps > 0 ||
+        user?._count.LeasedBranchIps > 0
+      ) {
+        throw new TRPCError({
+          code: "METHOD_NOT_SUPPORTED",
+          message: "you can't delete user which have performed some operation!",
+        });
+      } else {
+        return await ctx.db.user.delete({
+          where: {
+            id: user.id,
+          },
+          select: {
+            email: true,
+            id: true,
+          },
+        });
+      }
     }),
 });

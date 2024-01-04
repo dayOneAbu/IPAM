@@ -1,11 +1,36 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client"
 
-import { type ColumnDef } from "@tanstack/react-table"
+import type { ColumnDef } from "@tanstack/react-table"
+import { useRouter } from "next/navigation"
 import { DataTableColumnHeader } from "~/app/_components/data-table/column-header"
 import { DataTableRowActions } from "~/app/_components/data-table/row-actions"
 
 import { type User } from "~/data/schema"
 
+
+const ActionCell = ({ row }) => {
+  const router = useRouter();
+
+  return (
+    <DataTableRowActions actions={[
+      {
+        action: 'edit',
+        onClick: () => {
+          router.push(`user/edit?email=${row.getValue("email")}`)
+        }
+      },
+      {
+        action: 'delete',
+        onClick: () => {
+          router.push(`user/delete?email=${row.getValue("email")}`)
+        }
+      }
+    ]} />
+  )
+}
 export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "id",
@@ -15,6 +40,8 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => <div className="w-[20px]">{row.getValue("id")}</div>,
     enableSorting: false,
     enableHiding: false,
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
   },
   {
     accessorKey: "email",
@@ -30,7 +57,7 @@ export const columns: ColumnDef<User>[] = [
     ),
     enableColumnFilter: false,
     enableGlobalFilter: false,
-    filterFn: "includesString"
+    enableSorting: false,
 
   },
   {
@@ -41,13 +68,16 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => (
       <div className="flex space-x-1">
         <span className="truncate font-medium">
-          {row.getValue("isAdmin") ? "Admin" : "NON Admin"}
+          {row.getValue("isAdmin")}
         </span>
       </div>
     ),
-    enableColumnFilter: true,
+    // enableColumnFilter: false,
+    enableSorting: true,
     enableGlobalFilter: false,
-    filterFn: "equals",
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
   },
   {
     accessorKey: "branchCreated",
@@ -63,7 +93,7 @@ export const columns: ColumnDef<User>[] = [
     ),
     enableColumnFilter: false,
     enableGlobalFilter: false,
-    enableSorting: true
+    enableSorting: false,
   },
   {
     accessorKey: "atmCreated",
@@ -79,7 +109,7 @@ export const columns: ColumnDef<User>[] = [
     ),
     enableColumnFilter: false,
     enableGlobalFilter: false,
-    enableSorting: true
+    enableSorting: false,
   },
   {
     accessorKey: "districtCreated",
@@ -95,16 +125,30 @@ export const columns: ColumnDef<User>[] = [
     ),
     enableColumnFilter: false,
     enableGlobalFilter: false,
-    enableSorting: true
+    enableSorting: false,
+  },
+  {
+    accessorKey: "updatedAt",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Last Modified" />
+    ),
+    cell: ({ row }) => {
+      const updatedAt: Date = row.getValue("updatedAt")
+
+      return (
+        <div className="flex min-w-[100px] items-center">
+          <span className="truncate font-medium">
+            {updatedAt.toUTCString()}
+          </span>
+        </div>
+      )
+    },
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: false
   },
   {
     id: "actions",
-    cell: ({ row }) => <DataTableRowActions actions={[
-      {
-        action: 'edit',
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        href: `user/${row.getValue("email")}-edit`
-      }
-    ]} />,
+    cell: ActionCell
   },
 ]

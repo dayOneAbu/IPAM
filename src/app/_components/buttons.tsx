@@ -18,6 +18,15 @@ export const LogoutButton = () => {
     </Button>
   );
 };
+export const ClearButton = ({ onClick }: {
+  onClick: () => void
+}) => {
+  return (
+    <Button variant="destructive" type="reset" className="mr-3 mt-4 mx-2" onClick={onClick}>
+      clear
+    </Button>
+  );
+};
 export function SubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
   return (
     <Button variant="default" className="mr-3 mt-4 mx-2" type="submit">

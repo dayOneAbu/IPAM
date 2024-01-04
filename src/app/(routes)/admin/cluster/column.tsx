@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client"
 
 import { type ColumnDef } from "@tanstack/react-table"
@@ -22,11 +25,10 @@ export const columns: ColumnDef<Cluster>[] = [
       <DataTableColumnHeader column={column} title="Cluster Name" />
     ),
     cell: ({ row }) => {
-      const name: string = row.getValue("name")
       return (
         <div className="flex min-w-[100px] items-center">
           <span className="truncate capitalize font-medium">
-            group {name.split('-')[1]}
+            {row.getValue("name")}
           </span>
         </div>
       )

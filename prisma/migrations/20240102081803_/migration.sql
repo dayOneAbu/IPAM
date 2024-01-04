@@ -110,7 +110,6 @@ CREATE TABLE "LeasedBranchIps" (
 -- CreateTable
 CREATE TABLE "LeasedATMIps" (
     "id" SERIAL NOT NULL,
-    "assignedTo" TEXT NOT NULL,
     "remark" TEXT NOT NULL,
     "allLANIpsId" INTEGER NOT NULL,
     "tunnelIpId" INTEGER NOT NULL,
@@ -131,6 +130,7 @@ CREATE TABLE "AllLANIps" (
     "ipAddress" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "clusterId" INTEGER NOT NULL,
 
     CONSTRAINT "AllLANIps_pkey" PRIMARY KEY ("id")
 );
@@ -147,6 +147,7 @@ CREATE TABLE "AllTunnelIps" (
     "TunnelIP_DC_ER22" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "clusterId" INTEGER NOT NULL,
 
     CONSTRAINT "AllTunnelIps_pkey" PRIMARY KEY ("id")
 );
@@ -276,3 +277,9 @@ ALTER TABLE "LeasedATMIps" ADD CONSTRAINT "LeasedATMIps_tunnelIpId_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "LeasedATMIps" ADD CONSTRAINT "LeasedATMIps_atmId_fkey" FOREIGN KEY ("atmId") REFERENCES "ATM"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "AllLANIps" ADD CONSTRAINT "AllLANIps_clusterId_fkey" FOREIGN KEY ("clusterId") REFERENCES "Cluster"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "AllTunnelIps" ADD CONSTRAINT "AllTunnelIps_clusterId_fkey" FOREIGN KEY ("clusterId") REFERENCES "Cluster"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

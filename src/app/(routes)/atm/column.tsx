@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client"
 
 import { type ColumnDef } from "@tanstack/react-table"
@@ -5,7 +8,26 @@ import { DataTableColumnHeader } from "~/app/_components/data-table/column-heade
 import { DataTableRowActions } from "~/app/_components/data-table/row-actions"
 import { } from "lucide-react"
 import { type Branch } from "~/data/schema"
+const ActionCell = ({ row }) => {
+  const router = useRouter();
 
+  return (
+    <DataTableRowActions actions={[
+      {
+        action: 'edit',
+        onClick: () => {
+          router.push(`user/edit?email=${row.getValue("email")}`)
+        }
+      },
+      {
+        action: 'delete',
+        onClick: () => {
+          router.push(`user/delete?email=${row.getValue("email")}`)
+        }
+      }
+    ]} />
+  )
+}
 export const columns: ColumnDef<Branch>[] = [
   {
     accessorKey: "id",
@@ -183,12 +205,7 @@ export const columns: ColumnDef<Branch>[] = [
   },
   {
     id: "actions",
-    cell: () => <DataTableRowActions actions={[
-      {
-        action: 'edit',
-        href: 'atm/edit'
-      }
-
-    ]} />,
+    cell: ActionCell
   },
+
 ]

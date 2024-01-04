@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client"
 
 import { type ColumnDef } from "@tanstack/react-table"
@@ -15,7 +18,25 @@ export const columns: ColumnDef<AllTunnelIps>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-
+  {
+    accessorKey: "cluster",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Cluster" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex min-w-[100px] items-center">
+          <span className="truncate font-medium">
+            {row.getValue("cluster")}
+          </span>
+        </div>
+      )
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
+    enableGlobalFilter: false,
+  },
   {
     accessorKey: "TunnelIP_DR_ER11",
     header: ({ column }) => (

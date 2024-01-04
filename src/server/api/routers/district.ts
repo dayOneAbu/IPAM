@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { NewDistrictSchema } from "~/data/schema";
+import { NewDistrictSchema, updateDistrictSchema } from "~/data/schema";
 
 export const districtRouter = createTRPCRouter({
   preloadData: protectedProcedure.query(async ({ ctx }) => {
@@ -63,6 +63,9 @@ export const districtRouter = createTRPCRouter({
         },
         updatedAt: true,
       },
+      orderBy: {
+        updatedAt: "desc",
+      },
     });
     if (!district) {
       throw new TRPCError({
@@ -73,16 +76,12 @@ export const districtRouter = createTRPCRouter({
     return district;
   }),
   getOne: protectedProcedure
-    .input(
-      z.object({
-        name: z.string().email(),
-      }),
-    )
+    .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
-      const { name } = input;
+      const { id } = input;
       const district = await ctx.db.district.findUnique({
         where: {
-          name,
+          id,
         },
         select: {
           id: true,
@@ -95,12 +94,16 @@ export const districtRouter = createTRPCRouter({
           },
           usableTunnelRange: {
             select: {
+              clusterName: true,
+              id: true,
               upperLimit: true,
               lowerLimit: true,
             },
           },
           usableLANRange: {
             select: {
+              clusterName: true,
+              id: true,
               upperLimit: true,
               lowerLimit: true,
             },
@@ -111,9 +114,6 @@ export const districtRouter = createTRPCRouter({
             },
           },
           updatedAt: true,
-        },
-        orderBy: {
-          name: "asc",
         },
       });
       if (!district) {
@@ -142,12 +142,12 @@ export const districtRouter = createTRPCRouter({
       }
       const cluster = await ctx.db.cluster.findFirst({
         where: {
-          name: clusterName,
+          name: clusterName.trim().toLowerCase(),
         },
       });
       const district = await ctx.db.district.create({
         data: {
-          name,
+          name: name.trim().toLowerCase(),
           createdBy: {
             connect: {
               id: parseInt(ctx.session.user.id),
@@ -172,10 +172,141 @@ export const districtRouter = createTRPCRouter({
       });
       if (!district) {
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "District information is not inserted Yet!",
+          code: "UNPROCESSABLE_CONTENT",
+          message: "there was a problem while creating District information!",
         });
       }
       return district;
+    }),
+  update: protectedProcedure
+    .input(updateDistrictSchema)
+    .mutation(async ({ ctx, input }) => {
+      const {
+        name,
+        clusterName,
+        currentName,
+        usableLANRange,
+        usableTunnelRange,
+      } = input;
+      if (ctx.session.user.id == null || ctx.session.user.id == undefined) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "you are an authorized!",
+        });
+      }
+      if (clusterName == undefined) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Cluster Name is required!",
+        });
+      }
+      const cluster = await ctx.db.cluster.findFirst({
+        where: {
+          name: clusterName.trim().toLowerCase(),
+        },
+      });
+      const district = await ctx.db.district.findUnique({
+        where: {
+          name: currentName.trim().toLowerCase(),
+        },
+        select: {
+          name: true,
+          id: true,
+          _count: {
+            select: {
+              branches: true,
+              ATM: true,
+            },
+          },
+        },
+      });
+      if (!district) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "District NotFound!",
+        });
+      }
+      if (district?._count.ATM > 0 || district?._count.branches > 0) {
+        throw new TRPCError({
+          code: "METHOD_NOT_SUPPORTED",
+          message: "you can't update district which have ATM and Branch!",
+        });
+      } else {
+        const dis = await ctx.db.district.update({
+          where: {
+            name: currentName.trim().toLowerCase(),
+          },
+          data: {
+            name: name.trim().toLowerCase(),
+            createdBy: {
+              connect: {
+                id: parseInt(ctx.session.user.id),
+              },
+            },
+            cluster: {
+              connect: {
+                id: cluster?.id,
+              },
+            },
+            usableLANRange: {
+              connect: {
+                id: parseInt(usableLANRange),
+              },
+            },
+            usableTunnelRange: {
+              connect: {
+                id: parseInt(usableTunnelRange),
+              },
+            },
+          },
+        });
+        if (!dis) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "oops! something goes wrong while inserting District!",
+          });
+        }
+        return dis;
+      }
+    }),
+  delete: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const district = await ctx.db.district.findUnique({
+        where: {
+          id: input.id,
+        },
+        select: {
+          name: true,
+          id: true,
+          _count: {
+            select: {
+              branches: true,
+              ATM: true,
+            },
+          },
+        },
+      });
+      if (!district) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "couldn't find what you are looking for!",
+        });
+      } else if (district?._count.ATM > 0 || district?._count.branches > 0) {
+        throw new TRPCError({
+          code: "METHOD_NOT_SUPPORTED",
+          message: "you can't delete district which have ATM and Branch!",
+        });
+      } else {
+        return await ctx.db.district.delete({
+          where: {
+            id: district.id,
+          },
+        });
+      }
     }),
 });

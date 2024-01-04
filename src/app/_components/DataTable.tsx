@@ -62,6 +62,11 @@ export function DataTable<TData>({
       rowSelection,
       globalFilter,
     },
+    initialState: {
+      pagination: {
+        pageSize: 20,
+      },
+    },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,

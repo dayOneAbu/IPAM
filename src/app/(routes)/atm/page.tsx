@@ -106,7 +106,7 @@ export default async function BranchPage() {
       <div className="hidden h-full flex-1 flex-col space-y-8 p-4 md:flex">
         <div className="flex items-center justify-between space-y-2">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
+            <h2 className="text-2xl font-bold tracking-tight">ATM&apos;s</h2>
             <p className="text-muted-foreground">
               Here&apos;s a list of CBE ATM&apos;s with all valuable information!
             </p>

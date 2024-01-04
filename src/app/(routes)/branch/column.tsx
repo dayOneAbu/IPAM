@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client"
 
 import { type ColumnDef } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "~/app/_components/data-table/column-header"
-import { DataTableRowActions } from "~/app/_components/data-table/row-actions"
-
 import { type Branch } from "~/data/schema"
 
 export const columns: ColumnDef<Branch>[] = [
@@ -42,7 +43,9 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
-    enableColumnFilter: false,
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
     enableGlobalFilter: false,
     enableSorting: true,
   },
@@ -137,16 +140,5 @@ export const columns: ColumnDef<Branch>[] = [
     enableColumnFilter: false,
     enableGlobalFilter: false,
     enableSorting: false,
-  },
-
-  {
-    id: "actions",
-    cell: () => <DataTableRowActions actions={[
-      {
-        action: 'edit',
-        href: 'branch/edit'
-      }
-
-    ]} />,
   },
 ]

@@ -13,20 +13,22 @@ import {
   FormLabel,
   FormMessage,
 } from "~/app/_components/ui/form"
-import Link from "next/link"
 import { SubmitButton } from "~/app/_components/buttons"
 import { useState } from "react"
 import { RadioGroup, RadioGroupItem } from "~/app/_components/ui/radio-group"
 import { ChevronLeft } from "lucide-react"
 import { useToast } from "~/app/_components/ui/use-toast"
 import { api } from "~/trpc/react"
-
+import { useRouter } from "next/navigation"
+import { type Metadata } from "next"
 
 const updateUserSchema = z.object({
   email: z.string().email({ message: "Email is required " }).optional(),
   isAdmin: z.string(),
 })
-
+export const metadata: Metadata = {
+  title: "Edit User",
+}
 export default function EditForm({ user }: {
   user: {
     email: string;
@@ -34,8 +36,8 @@ export default function EditForm({ user }: {
   }
 }) {
   const { toast } = useToast()
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false)
-
   const form = useForm<z.infer<typeof updateUserSchema>>({
     resolver: zodResolver(updateUserSchema),
     progressive: true,
@@ -54,6 +56,13 @@ export default function EditForm({ user }: {
       });
       setIsSubmitting(false);
     },
+    onError: (err) => {
+      toast({
+        variant: "destructive",
+        title: `Error`,
+        description: `${err.message}`,
+      });
+    },
   });
 
   function onSubmit(values: z.infer<typeof updateUserSchema>) {
@@ -63,15 +72,16 @@ export default function EditForm({ user }: {
       email: user.email,
       isAdmin: values.isAdmin
     })
-
+    setIsSubmitting(false);
   }
   return (
     <div className="mx-4 py-6">
-      <Link href={`.`} className="space-y-1">
-        <Button variant="destructive" className="w-44 my-2 justify-start">
-          <ChevronLeft className="text-white h-8 w-4" />Go Back
-        </Button>
-      </Link>
+      <Button onClick={() => {
+        router.back()
+        router.refresh()
+      }} variant="destructive" className="w-44 my-2 justify-start">
+        <ChevronLeft className="text-white h-8 w-4" />Go Back
+      </Button>
       <div className="space-y-2 mt-4 mx-6">
         <h2 className="text-2xl font-bold tracking-tight capitalize">
           Edit User

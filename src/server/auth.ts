@@ -14,10 +14,13 @@ import { api } from "~/trpc/server";
 declare module "next-auth" {
   interface Session {
     user: {
-      id: string | undefined | null;
-      // ...other properties
-      email: string | undefined | null;
-      isAdmin: boolean | undefined | null;
+      id: string;
+      email: string;
+      isAdmin: boolean;
+      // id: string | undefined | null;
+      // // ...other properties
+      // email: string | undefined | null;
+      // isAdmin: boolean | undefined | null;
     };
   }
   interface User {
@@ -60,8 +63,8 @@ export const authOptions: NextAuthOptions = {
       if (token?.id) {
         session.user = {
           id: token.id,
-          email: token.email,
           isAdmin: token.isAdmin,
+          email: token.email,
         };
       }
       return session;

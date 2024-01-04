@@ -1,11 +1,35 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client"
 
 import { type ColumnDef } from "@tanstack/react-table"
 import { MoveHorizontal } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { DataTableColumnHeader } from "~/app/_components/data-table/column-header"
 import { DataTableRowActions } from "~/app/_components/data-table/row-actions"
 import { type District } from "~/data/schema"
 
+const ActionCell = ({ row }) => {
+  const router = useRouter();
+
+  return (
+    <DataTableRowActions actions={[
+      {
+        action: 'edit',
+        onClick: () => {
+          router.push(`district/edit?id=${row.getValue("id")}`)
+        }
+      },
+      {
+        action: 'delete',
+        onClick: () => {
+          router.push(`district/delete?id=${row.getValue("id")}`)
+        }
+      }
+    ]} />
+  )
+}
 export const columns: ColumnDef<District>[] = [
   {
     accessorKey: "id",
@@ -62,33 +86,6 @@ export const columns: ColumnDef<District>[] = [
     enableGlobalFilter: false,
     enableSorting: true,
   },
-
-  {
-    accessorKey: "usableTunnelRange",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Tunnel-Range" />
-    ),
-    cell: ({ row }) => {
-      const usableTunnelRange: {
-        lowerLimit: string
-        upperLimit: string
-      } = row.getValue("usableTunnelRange")
-      return (
-        <div className="flex min-w-[100px] items-center">
-          <p className="truncate font-medium">
-            <span className="flex items-center justify-between">
-              {usableTunnelRange.lowerLimit}
-              <MoveHorizontal className="h-6 w-8 mx-2 text-brand-purple" />
-              {usableTunnelRange.upperLimit}
-            </span>
-          </p>
-        </div>
-      )
-    },
-    enableColumnFilter: false,
-    enableGlobalFilter: false,
-    enableSorting: false,
-  },
   {
     accessorKey: "usableLANRange",
     header: ({ column }) => (
@@ -106,6 +103,32 @@ export const columns: ColumnDef<District>[] = [
               {usableLANRange.lowerLimit}
               <MoveHorizontal className="h-6 w-8 mx-2 text-brand-purple" />
               {usableLANRange.upperLimit}
+            </span>
+          </p>
+        </div>
+      )
+    },
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: false,
+  },
+  {
+    accessorKey: "usableTunnelRange",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Tunnel-Range" />
+    ),
+    cell: ({ row }) => {
+      const usableTunnelRange: {
+        lowerLimit: string
+        upperLimit: string
+      } = row.getValue("usableTunnelRange")
+      return (
+        <div className="flex min-w-[100px] items-center">
+          <p className="truncate font-medium">
+            <span className="flex items-center justify-between">
+              {usableTunnelRange.lowerLimit}
+              <MoveHorizontal className="h-6 w-8 mx-2 text-brand-purple" />
+              {usableTunnelRange.upperLimit}
             </span>
           </p>
         </div>
@@ -135,12 +158,6 @@ export const columns: ColumnDef<District>[] = [
   },
   {
     id: "actions",
-    cell: () => <DataTableRowActions actions={[
-      {
-        action: 'edit',
-        href: 'district/edit'
-      }
-
-    ]} />,
+    cell: ActionCell
   },
 ]

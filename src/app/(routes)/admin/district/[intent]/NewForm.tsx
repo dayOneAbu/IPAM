@@ -12,8 +12,8 @@ import {
   FormLabel,
   FormMessage,
 } from "~/app/_components/ui/form"
-import Link from "next/link"
-import { SubmitButton } from "~/app/_components/buttons"
+
+import { ClearButton, SubmitButton } from "~/app/_components/buttons"
 import { useState } from "react"
 import { ChevronLeft, MoveHorizontal } from "lucide-react"
 import { useToast } from "~/app/_components/ui/use-toast"
@@ -22,8 +22,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~
 import { type NewDistrict, NewDistrictSchema } from "~/data/schema"
 
 import Loading from "~/app/_components/loading"
+import { useRouter } from "next/navigation"
+import { type Metadata } from "next"
 
-
+export const metadata: Metadata = {
+  title: "New district",
+}
 export default function NewForm({ preloadData }: {
   preloadData: {
     lanRange: {
@@ -41,12 +45,18 @@ export default function NewForm({ preloadData }: {
   }
 }) {
   const { toast } = useToast()
-
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false)
   const form = useForm<NewDistrict>({
     resolver: zodResolver(NewDistrictSchema),
     progressive: true,
     shouldFocusError: true,
+    defaultValues: {
+      clusterName: "",
+      name: "",
+      usableLANRange: "",
+      usableTunnelRange: ""
+    },
   })
   const [filteredLAN, setFilteredLAN] = useState<{
     id: number;
@@ -54,37 +64,42 @@ export default function NewForm({ preloadData }: {
     lowerLimit: string;
     upperLimit: string;
   }[]>()
-
-
   const [filteredTunnel, setFilteredTunnel] = useState<{
     id: number;
     clusterName: string;
     lowerLimit: string;
     upperLimit: string;
   }[]>()
-  const utils = api.useUtils()
+
   const createDistrict = api.district.create.useMutation({
     onSuccess: (res) => {
       toast({
         title: `successful`,
-        description: `you have created user ${res.name} successfully`,
+        description: `you have created District: ${res.name} successfully`,
       });
       setIsSubmitting(false);
-      void utils.district.getAll.invalidate();
+    },
+    onError: (err) => {
+      toast({
+        variant: "destructive",
+        title: `Error`,
+        description: `${err.message}`,
+      });
     },
   });
   function onSubmit(values: NewDistrict) {
     setIsSubmitting(true)
     createDistrict.mutate(values)
-
+    setIsSubmitting(false);
   }
   return (
     <div className="mx-4 py-6">
-      <Link href={`.`} className="space-y-1">
-        <Button variant="destructive" className="w-44 my-2 justify-start">
-          <ChevronLeft className="text-white h-8 w-4" />Go Back
-        </Button>
-      </Link>
+      <Button onClick={() => {
+        router.back()
+        router.refresh()
+      }} variant="destructive" className="w-44 my-2 justify-start">
+        <ChevronLeft className="text-white h-8 w-4" />Go Back
+      </Button>
       <div className="space-y-2 mt-4 mx-6">
         <h2 className="text-2xl font-bold tracking-tight capitalize">
           New District
@@ -135,11 +150,15 @@ export default function NewForm({ preloadData }: {
                       <Select onValueChange={(value) => {
                         form.setValue('usableLANRange', value)
                         const item = preloadData.lanRange.find((item) => item.id == parseInt(value))
-                        if (form.getValues('clusterName') == undefined) { form.setValue('clusterName', item?.clusterName) }
+                        // if (form.getValues('clusterName') == undefined) {
+                        form.setValue('clusterName', item?.clusterName)
+                        // }
                         if (item?.clusterName != undefined) {
                           setFilteredTunnel(preloadData.tunnelRange.filter(tunnel => tunnel.clusterName == item?.clusterName))
                         }
-                      }} defaultValue={field.value}>
+                      }}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select a LAN Range to be used by this District" />
@@ -178,11 +197,12 @@ export default function NewForm({ preloadData }: {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Tunnel Range</FormLabel>
-                      {/* <Select onValueChange={field.onChange} defaultValue={field.value}> */}
                       <Select onValueChange={(value) => {
                         form.setValue('usableTunnelRange', value)
                         const item = preloadData.tunnelRange.find((item) => item.id == parseInt(value))
-                        if (form.getValues('clusterName') == undefined) { form.setValue('clusterName', item?.clusterName) }
+                        // if (form.getValues('clusterName') == undefined) {
+                        form.setValue('clusterName', item?.clusterName)
+                        // }
                         if (item?.clusterName != undefined) {
                           setFilteredLAN(() => preloadData.lanRange.filter(lan => lan.clusterName == item?.clusterName))
                         }
@@ -225,6 +245,7 @@ export default function NewForm({ preloadData }: {
             }
             <br />
             <SubmitButton isSubmitting={isSubmitting} />
+            <ClearButton onClick={() => form.reset()} />
           </form>
         </div>
       </FormProvider>

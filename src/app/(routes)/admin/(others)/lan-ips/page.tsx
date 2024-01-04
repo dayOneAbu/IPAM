@@ -10,7 +10,19 @@ export const metadata: Metadata = {
 
 }
 export default async function TunnelRangePage() {
+  const cluster = await api.cluster.getAll.query()
 
+  const filterOps = [
+    {
+      title: "cluster",
+      options: cluster.map(item => {
+        return {
+          value: item.name,
+          label: item.name,
+        }
+      }),
+    },
+  ]
   const lanIps = await api.lanIps.getAll.query()
   return (
     <div className="hidden h-full flex-1 flex-col space-y-8 p-4 md:flex">
@@ -22,7 +34,17 @@ export default async function TunnelRangePage() {
           </p>
         </div>
       </div>
-      {lanIps && <DataTable data={lanIps} columns={columns} />}
+      {lanIps && <DataTable data={lanIps.map(item => {
+        return {
+          cluster: item.cluster.name,
+          id: item.id,
+          updatedAt: item.updatedAt,
+          ipAddress: item.ipAddress,
+          isTaken: item.isTaken,
+          isReserved: item.isReserved,
+          isFlagged: item.isFlagged,
+        }
+      })} columns={columns} colFilterable={filterOps} />}
     </div>
 
   )

@@ -1,10 +1,28 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client"
 
 import { type ColumnDef } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "~/app/_components/data-table/column-header"
 import { DataTableRowActions } from "~/app/_components/data-table/row-actions"
-import { } from "lucide-react"
 import { type Branch } from "~/data/schema"
+import { useRouter } from "next/navigation"
+
+const ActionCell = () => {
+  const router = useRouter();
+
+  return (
+    <DataTableRowActions actions={[
+      {
+        action: 'edit',
+        onClick: () => {
+          router.push('atm/edit')
+        }
+      }
+    ]} />
+  )
+}
 
 export const columns: ColumnDef<Branch>[] = [
   {
@@ -181,14 +199,18 @@ export const columns: ColumnDef<Branch>[] = [
     //   return value.includes(row.getValue(id))
     // },
   },
+  // {
+  //   id: "actions",
+  //   cell: () => <DataTableRowActions actions={[
+  //     {
+  //       action: 'edit',
+  //       href: 'atm/edit'
+  //     }
+
+  //   ]} />,
+  // },
   {
     id: "actions",
-    cell: () => <DataTableRowActions actions={[
-      {
-        action: 'edit',
-        href: 'atm/edit'
-      }
-
-    ]} />,
+    cell: ActionCell
   },
 ]

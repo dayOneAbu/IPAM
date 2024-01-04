@@ -1,36 +1,35 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client"
 
 import { type ColumnDef } from "@tanstack/react-table"
+import { useRouter } from "next/navigation"
 import { DataTableColumnHeader } from "~/app/_components/data-table/column-header"
 import { DataTableRowActions } from "~/app/_components/data-table/row-actions"
 
 import { type Branch } from "~/data/schema"
-/**
- * (alias) type Branch = {
-    id: number;
-    district: {
-        name: string;
-    };
-    name: string;
-    remark: string;
-    updatedAt: string;
-    ipWithTunnel: {
-        lanIpAddress: {
-            ipAddress: string;
-        };
-        tunnelIpAddress: {
-            TunnelIP_DR_ER11: string;
-            TunnelIP_DR_ER12: string;
-            TunnelIP_DC_ER21: string;
-            TunnelIP_DC_ER22: string;
-        };
-    };
-    createdBy: {
-        ...;
-    };
-    wanIpAddress: string;
+
+const ActionCell = ({ row }) => {
+  const router = useRouter();
+
+  return (
+    <DataTableRowActions actions={[
+      {
+        action: 'edit',
+        onClick: () => {
+          router.push(`branch/edit?id=${row.getValue("id")}`)
+        }
+      },
+      {
+        action: 'delete',
+        onClick: () => {
+          router.push(`branch/edit?id=${row.getValue("id")}`)
+        }
+      }
+    ]} />
+  )
 }
- */
 export const columns: ColumnDef<Branch>[] = [
   {
     accessorKey: "id",
@@ -47,16 +46,15 @@ export const columns: ColumnDef<Branch>[] = [
       <DataTableColumnHeader column={column} title="Name" />
     ),
     cell: ({ row }) => (
-      <div className="flex space-x-1">
-        <span className="truncate capitalize font-medium">
+      <div className="flex space-x-1 max-w-[180px]">
+        <span className="truncate capitalize break-words font-medium">
           {row.getValue("name")}
         </span>
       </div>
     ),
-    // filterFn: (row, id, ) => {
-    //   return value.includes(row.getValue(id))
-    // },
-    filterFn: "includesString"
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+    enableSorting: true,
   },
   {
     accessorKey: "district",
@@ -70,9 +68,10 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
-    enableColumnFilter: false,
-    enableGlobalFilter: false,
-    enableSorting: true,
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
+    enableSorting: false,
   },
   {
     accessorKey: "wanAddress",
@@ -80,13 +79,15 @@ export const columns: ColumnDef<Branch>[] = [
       <DataTableColumnHeader column={column} title="WAN-IP_Address" />
     ),
     cell: ({ row }) => (
-      <div className="flex min-w-[100px] items-center">
+      <div className="flex max-w-[140px] items-center">
         <span className="truncate font-medium">
           {row.getValue("wanAddress")}
         </span>
       </div>
     ),
-    filterFn: "includesString"
+    enableColumnFilter: false,
+    filterFn: "includesString",
+    enableSorting: false,
   },
   {
     accessorKey: "ipAddress",
@@ -94,12 +95,13 @@ export const columns: ColumnDef<Branch>[] = [
       <DataTableColumnHeader column={column} title="LAN-IP_Address" />
     ),
     cell: ({ row }) => (
-      <div className="flex min-w-[100px] items-center">
+      <div className="flex max-w-[140px] items-center">
         <span className="truncate font-medium">
           {row.getValue("ipAddress")}
         </span>
       </div>
     ),
+    enableColumnFilter: false,
     filterFn: "includesString"
   },
   {
@@ -108,12 +110,13 @@ export const columns: ColumnDef<Branch>[] = [
       <DataTableColumnHeader column={column} title="TunnelIP_DR_ER11" />
     ),
     cell: ({ row }) => (
-      <div className="flex min-w-[100px] items-center">
+      <div className="flex max-w-[140px] items-center">
         <span className="truncate font-medium">
           {row.getValue("TunnelIP_DR_ER11")}
         </span>
       </div>
     ),
+    enableColumnFilter: false,
     filterFn: "includesString"
   },
   {
@@ -122,13 +125,15 @@ export const columns: ColumnDef<Branch>[] = [
       <DataTableColumnHeader column={column} title="TunnelIP_DR_ER12" />
     ),
     cell: ({ row }) => (
-      <div className="flex min-w-[100px] items-center">
+      <div className="flex max-w-[140px] items-center">
         <span className="truncate font-medium">
           {row.getValue("TunnelIP_DR_ER12")}
         </span>
       </div>
     ),
-    filterFn: "includesString"
+    enableSorting: false,
+    enableColumnFilter: false,
+    enableGlobalFilter: false
   },
   {
     accessorKey: "TunnelIP_DC_ER21",
@@ -136,13 +141,15 @@ export const columns: ColumnDef<Branch>[] = [
       <DataTableColumnHeader column={column} title="TunnelIP_DC_ER21" />
     ),
     cell: ({ row }) => (
-      <div className="flex min-w-[100px] items-center">
+      <div className="flex max-w-[140px] items-center">
         <span className="truncate font-medium">
           {row.getValue("TunnelIP_DC_ER21")}
         </span>
       </div>
     ),
-    filterFn: "includesString"
+    enableSorting: false,
+    enableColumnFilter: false,
+    enableGlobalFilter: false
   },
   {
     accessorKey: "TunnelIP_DC_ER22",
@@ -150,23 +157,18 @@ export const columns: ColumnDef<Branch>[] = [
       <DataTableColumnHeader column={column} title="TunnelIP_DC_ER22" />
     ),
     cell: ({ row }) => (
-      <div className="flex min-w-[100px] items-center">
+      <div className="flex max-w-[140px] items-center">
         <span className="truncate font-medium">
           {row.getValue("TunnelIP_DC_ER22")}
         </span>
       </div>
     ),
-    filterFn: "includesString"
+    enableSorting: false,
+    enableColumnFilter: false,
+    enableGlobalFilter: false
   },
-
   {
     id: "actions",
-    cell: () => <DataTableRowActions actions={[
-      {
-        action: 'edit',
-        href: 'branch/edit'
-      }
-
-    ]} />,
+    cell: ActionCell
   },
 ]

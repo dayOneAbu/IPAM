@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client"
 
 import { type ColumnDef } from "@tanstack/react-table"
@@ -70,7 +73,7 @@ export const columns: ColumnDef<LANRange>[] = [
       <DataTableColumnHeader column={column} title="Districts" />
     ),
     cell: ({ row }) => {
-      const districts: [] = row.getValue("District")
+      const districts: { name: string }[] = row.getValue("District")
       return (
         <>
           {districts.map((item, idx) => (

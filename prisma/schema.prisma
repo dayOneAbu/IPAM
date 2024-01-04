@@ -93,8 +93,10 @@ model Cluster {
     createdBy User       @relation(fields: [userId], references: [id])
     userId    Int
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+    AllTunnelIps AllTunnelIps[]
+    AllLANIps    AllLANIps[]
 
     @@index([name])
 }
@@ -166,15 +168,18 @@ model AllLANIps {
     isReserved      Boolean          @default(false)
     isFlagged       Boolean          @default(false)
     ipAddress       String           @unique
+    cluster         Cluster          @relation(fields: [clusterId], references: [id])
     LeasedBranchIps LeasedBranchIps?
     LeasedATMIps    LeasedATMIps?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    clusterId Int
 }
 
 model AllTunnelIps {
     id               Int              @id @default(autoincrement())
+    cluster          Cluster          @relation(fields: [clusterId], references: [id])
     isTaken          Boolean          @default(false)
     isReserved       Boolean          @default(false)
     isFlagged        Boolean          @default(false)
@@ -187,4 +192,5 @@ model AllTunnelIps {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    clusterId Int
 }

@@ -9,6 +9,7 @@ import { Separator } from "./ui/separator"
 import CBElogo from "~/data"
 import NavBarLink from "./NavBarLink"
 import { type Session } from "next-auth"
+import { ScrollArea } from "./ui/scroll-area"
 
 
 export function Sidebar({ className, session }: {
@@ -16,13 +17,13 @@ export function Sidebar({ className, session }: {
 } & React.HTMLAttributes<HTMLDivElement>) {
 
   return (
-    <>
+    <ScrollArea className=" w-full">
       <div className="bg-brand-black">
         <Link href={"/"} className="mt-8 mx-2">
           <Image src={CBElogo} sizes="100vw" className="h-20 w-full" alt="cbe logo" />
         </Link>
-
       </div>
+
       <div className={cn("pt-4 px-4", className)}>
         <div className="px-1 py-2">
           <h2 className="mb-2 text-lg text-brand-white font-semibold tracking-tight">
@@ -58,6 +59,6 @@ export function Sidebar({ className, session }: {
           )
         }
       </div>
-    </>
+    </ScrollArea>
   )
 }

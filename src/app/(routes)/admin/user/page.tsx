@@ -18,10 +18,11 @@ export default async function BranchPage() {
     return {
       id: user.id,
       email: user.email,
-      isAdmin: user.isAdmin,
+      isAdmin: user.isAdmin ? "Admin" : "NON Admin",
       branchCreated: user._count.branchCreated,
       atmCreated: user._count.atmCreated,
       districtCreated: user._count.districtCreated,
+      updatedAt: user.updatedAt
     }
   })
   const filterOps = [
@@ -29,12 +30,12 @@ export default async function BranchPage() {
       title: "isAdmin",
       options: [
         {
-          value: true,
-          label: "Admin",
+          value: "Admin",
+          label: "ADMIN",
         },
         {
-          value: false,
-          label: "NON Admin",
+          value: "NON Admin",
+          label: "NON ADMIN",
         },
       ],
     },
@@ -43,7 +44,7 @@ export default async function BranchPage() {
     <div className="hidden h-full flex-1 flex-col space-y-8 p-4 md:flex">
       <div className="flex items-center justify-between space-y-2">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Users!</h2>
           <p className="text-muted-foreground">
             Here&apos;s a list of Users!
           </p>

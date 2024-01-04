@@ -16,7 +16,7 @@ export default async function BranchPage() {
     <div className="hidden h-full flex-1 flex-col space-y-8 p-4 md:flex">
       <div className="flex items-center justify-between space-y-2">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Cluster!</h2>
           <p className="text-muted-foreground">
             Clusters are created by grouping districts together Based on common  LAN IP range and Tunnel IP range
           </p>
