@@ -17,11 +17,11 @@ export default function NotFound() {
             >
               Go back home
             </Link>
-            <a href="#" className="text-sm font-semibold text-brand-black">
+            <p className="text-lg text-brand-black">
               if this problem persists please contact support <span aria-hidden="true">
                 internal advisor team one outlook
               </span>
-            </a>
+            </p>
           </div>
         </div>
       </main>

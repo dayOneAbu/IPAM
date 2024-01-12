@@ -59,6 +59,22 @@ export const BranchSchema = z.object({
 
 export type Branch = z.infer<typeof BranchSchema>;
 
+export const ATMSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  district: z.string(),
+  isOutlet: z.boolean(),
+  loopBackAddress: z.string(),
+  wanAddress: z.string(),
+  ipAddress: z.string().optional(),
+  TunnelIP_DR_ER11: z.string().optional(),
+  TunnelIP_DR_ER12: z.string().optional(),
+  TunnelIP_DC_ER21: z.string().optional(),
+  TunnelIP_DC_ER22: z.string().optional(),
+});
+
+export type ATM = z.infer<typeof ATMSchema>;
+
 export const DistrictSchema = z.object({
   id: z.number(),
   name: z.string(),
@@ -167,3 +183,17 @@ export const UserSchema = z.object({
   updatedAt: z.date(),
 });
 export type User = z.infer<typeof UserSchema>;
+
+export const LeasedBranchSchema = z.object({
+  id: z.number(),
+  remark: z.string(),
+  authorizedBy: z.string(),
+  ipAddress: z.string(),
+  TunnelIP_DR_ER11: z.string(),
+  TunnelIP_DR_ER12: z.string(),
+  TunnelIP_DC_ER21: z.string(),
+  TunnelIP_DC_ER22: z.string(),
+
+  updatedAt: z.date(),
+});
+export type LeasedBranch = z.infer<typeof LeasedBranchSchema>;

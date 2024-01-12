@@ -11,7 +11,7 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
-CREATE TABLE "Branch" (
+CREATE TABLE "branch" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "districtId" INTEGER NOT NULL,
@@ -103,6 +103,8 @@ CREATE TABLE "LeasedBranchIps" (
     "userId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "tunnelRangeId" INTEGER NOT NULL,
+    "lANRangeId" INTEGER NOT NULL,
 
     CONSTRAINT "LeasedBranchIps_pkey" PRIMARY KEY ("id")
 );
@@ -117,6 +119,8 @@ CREATE TABLE "LeasedATMIps" (
     "userId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "tunnelRangeId" INTEGER NOT NULL,
+    "lANRangeId" INTEGER NOT NULL,
 
     CONSTRAINT "LeasedATMIps_pkey" PRIMARY KEY ("id")
 );
@@ -131,6 +135,7 @@ CREATE TABLE "AllLANIps" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "clusterId" INTEGER NOT NULL,
+    "lANRangeId" INTEGER NOT NULL,
 
     CONSTRAINT "AllLANIps_pkey" PRIMARY KEY ("id")
 );
@@ -148,6 +153,7 @@ CREATE TABLE "AllTunnelIps" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "clusterId" INTEGER NOT NULL,
+    "tunnelRangeId" INTEGER NOT NULL,
 
     CONSTRAINT "AllTunnelIps_pkey" PRIMARY KEY ("id")
 );
@@ -159,7 +165,7 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE INDEX "User_email_idx" ON "User"("email");
 
 -- CreateIndex
-CREATE INDEX "Branch_name_idx" ON "Branch"("name");
+CREATE INDEX "Branch_name_idx" ON "branch"("name");
 
 -- CreateIndex
 CREATE INDEX "ATM_name_idx" ON "ATM"("name");
@@ -222,10 +228,10 @@ CREATE UNIQUE INDEX "AllTunnelIps_TunnelIP_DC_ER21_key" ON "AllTunnelIps"("Tunne
 CREATE UNIQUE INDEX "AllTunnelIps_TunnelIP_DC_ER22_key" ON "AllTunnelIps"("TunnelIP_DC_ER22");
 
 -- AddForeignKey
-ALTER TABLE "Branch" ADD CONSTRAINT "Branch_districtId_fkey" FOREIGN KEY ("districtId") REFERENCES "District"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "branch" ADD CONSTRAINT "Branch_districtId_fkey" FOREIGN KEY ("districtId") REFERENCES "District"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Branch" ADD CONSTRAINT "Branch_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "branch" ADD CONSTRAINT "Branch_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ATM" ADD CONSTRAINT "ATM_districtId_fkey" FOREIGN KEY ("districtId") REFERENCES "District"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -264,7 +270,13 @@ ALTER TABLE "LeasedBranchIps" ADD CONSTRAINT "LeasedBranchIps_allLANIpsId_fkey" 
 ALTER TABLE "LeasedBranchIps" ADD CONSTRAINT "LeasedBranchIps_tunnelIpId_fkey" FOREIGN KEY ("tunnelIpId") REFERENCES "AllTunnelIps"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "LeasedBranchIps" ADD CONSTRAINT "LeasedBranchIps_assignedToId_fkey" FOREIGN KEY ("assignedToId") REFERENCES "Branch"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "LeasedBranchIps" ADD CONSTRAINT "LeasedBranchIps_assignedToId_fkey" FOREIGN KEY ("assignedToId") REFERENCES "branch"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "LeasedBranchIps" ADD CONSTRAINT "LeasedBranchIps_tunnelRangeId_fkey" FOREIGN KEY ("tunnelRangeId") REFERENCES "TunnelRange"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "LeasedBranchIps" ADD CONSTRAINT "LeasedBranchIps_lANRangeId_fkey" FOREIGN KEY ("lANRangeId") REFERENCES "LANRange"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "LeasedATMIps" ADD CONSTRAINT "LeasedATMIps_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -279,7 +291,19 @@ ALTER TABLE "LeasedATMIps" ADD CONSTRAINT "LeasedATMIps_tunnelIpId_fkey" FOREIGN
 ALTER TABLE "LeasedATMIps" ADD CONSTRAINT "LeasedATMIps_atmId_fkey" FOREIGN KEY ("atmId") REFERENCES "ATM"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "LeasedATMIps" ADD CONSTRAINT "LeasedATMIps_tunnelRangeId_fkey" FOREIGN KEY ("tunnelRangeId") REFERENCES "TunnelRange"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "LeasedATMIps" ADD CONSTRAINT "LeasedATMIps_lANRangeId_fkey" FOREIGN KEY ("lANRangeId") REFERENCES "LANRange"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "AllLANIps" ADD CONSTRAINT "AllLANIps_clusterId_fkey" FOREIGN KEY ("clusterId") REFERENCES "Cluster"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "AllLANIps" ADD CONSTRAINT "AllLANIps_lANRangeId_fkey" FOREIGN KEY ("lANRangeId") REFERENCES "LANRange"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "AllTunnelIps" ADD CONSTRAINT "AllTunnelIps_clusterId_fkey" FOREIGN KEY ("clusterId") REFERENCES "Cluster"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "AllTunnelIps" ADD CONSTRAINT "AllTunnelIps_tunnelRangeId_fkey" FOREIGN KEY ("tunnelRangeId") REFERENCES "TunnelRange"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

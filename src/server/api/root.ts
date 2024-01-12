@@ -7,6 +7,7 @@ import { TunnelRangeRouter } from "./routers/tunnel-ranges";
 import { branchRouter } from "./routers/branch";
 import { districtRouter } from "./routers/district";
 import { clusterRouter } from "./routers/cluster";
+import { atmRouter } from "./routers/atm";
 
 /**
  * This is the primary router for your server.
@@ -22,6 +23,7 @@ export const appRouter = createTRPCRouter({
   branch: branchRouter,
   district: districtRouter,
   cluster: clusterRouter,
+  atm: atmRouter,
 });
 
 // export type definition of API

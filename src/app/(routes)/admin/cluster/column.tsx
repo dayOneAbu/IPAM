@@ -95,7 +95,7 @@ export const columns: ColumnDef<Cluster>[] = [
       return (
         <div className="flex min-w-[100px] items-center">
           <span className="truncate font-medium">
-            {updatedAt.toUTCString()}
+            {updatedAt.toLocaleDateString()}
           </span>
         </div>
       )

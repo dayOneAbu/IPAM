@@ -1,23 +1,14 @@
 import { z } from "zod";
-import { TRPCError, type inferAsyncReturnType } from "@trpc/server";
+import { TRPCError } from "@trpc/server";
 import {
-  type createTRPCContext,
   createTRPCRouter,
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
 
-const infiniteIpsSchema = z.object({
-  limit: z.number().default(50).optional(),
-  cursor: z
-    .object({
-      id: z.number(),
-    })
-    .optional(),
-});
-export const branchRouter = createTRPCRouter({
+export const atmRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
-    const branch = await ctx.db.branch.findMany({
+    const atm = await ctx.db.aTM.findMany({
       select: {
         id: true,
         name: true,
@@ -27,7 +18,8 @@ export const branchRouter = createTRPCRouter({
           },
         },
         wanAddress: true,
-        remark: true,
+        isOutlet: true,
+        loopBackAddress: true,
         ipWithTunnel: {
           select: {
             lanIpAddress: {
@@ -56,19 +48,19 @@ export const branchRouter = createTRPCRouter({
         updatedAt: "desc",
       },
     });
-    if (!branch) {
+    if (!atm) {
       throw new TRPCError({
         code: "NOT_FOUND",
-        message: "No Branch information is inserted Yet!",
+        message: "No atm information is inserted Yet!",
       });
     }
-    return branch;
+    return atm;
   }),
   getOne: protectedProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
       const { id } = input;
-      const branch = await ctx.db.branch.findUnique({
+      const atm = await ctx.db.aTM.findUnique({
         where: {
           id,
         },
@@ -111,18 +103,18 @@ export const branchRouter = createTRPCRouter({
           updatedAt: true,
         },
       });
-      if (!branch) {
+      if (!atm) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Branch information is not inserted Yet!",
+          message: "atm information is not inserted Yet!",
         });
       }
-      return branch;
+      return atm;
     }),
   delete: protectedProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const branch = await ctx.db.branch.findUnique({
+      const atm = await ctx.db.aTM.findUnique({
         where: {
           id: input.id,
         },
@@ -146,7 +138,7 @@ export const branchRouter = createTRPCRouter({
         },
       });
 
-      if (!branch || !admin) {
+      if (!atm || !admin) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "couldn't find what you are looking for!",
@@ -154,22 +146,20 @@ export const branchRouter = createTRPCRouter({
       } else if (admin.email == ctx.session.user.email) {
         throw new TRPCError({
           code: "METHOD_NOT_SUPPORTED",
-          message: "you can't delete branch which you haven't created!",
+          message: "you can't delete atm which you haven't created!",
         });
       } else {
-        return await ctx.db.branch.delete({
+        return await ctx.db.aTM.delete({
           where: {
-            id: branch.id,
+            id: atm.id,
           },
         });
       }
     }),
-  leasedBranchIps: protectedProcedure.query(async ({ ctx }) => {
-    const leasedBranchIps = await ctx.db.leasedBranchIps.findMany({
+  leasedAtmIps: protectedProcedure.query(async ({ ctx }) => {
+    const leasedAtmIps = await ctx.db.leasedATMIps.findMany({
       select: {
         id: true,
-        isTaken: true,
-        isReserved: true,
         authorizedBy: {
           select: {
             email: true,
@@ -192,38 +182,12 @@ export const branchRouter = createTRPCRouter({
         updatedAt: true,
       },
     });
-    if (!leasedBranchIps) {
+    if (!leasedAtmIps) {
       throw new TRPCError({
         code: "NOT_FOUND",
         message: "couldn't find what you are looking for!",
       });
     }
-    return leasedBranchIps;
+    return leasedAtmIps;
   }),
 });
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function getInfiniteTunnelIps({
-  ctx,
-  limit = 50,
-  cursor,
-}: z.infer<typeof infiniteIpsSchema> & {
-  ctx: inferAsyncReturnType<typeof createTRPCContext>;
-}) {
-  const data = await ctx.db.allTunnelIps.findMany({
-    take: limit + 1,
-    cursor: cursor ? cursor : undefined,
-  });
-
-  let nextCursor: typeof cursor | undefined;
-  if (data.length > limit) {
-    const nextItem = data.pop();
-    if (nextItem != null) {
-      nextCursor = { id: nextItem?.id };
-    }
-  }
-  return {
-    tunnelIps: data,
-    nextCursor,
-  };
-}

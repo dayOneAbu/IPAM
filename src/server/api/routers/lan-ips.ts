@@ -1,19 +1,9 @@
 import { z } from "zod";
-import { TRPCError, type inferAsyncReturnType } from "@trpc/server";
-import {
-  type createTRPCContext,
-  createTRPCRouter,
-  protectedProcedure,
-} from "~/server/api/trpc";
+import { TRPCError } from "@trpc/server";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import ip from "ip";
+import { getLastIp } from "~/lib/utils";
 
-const infiniteIpsSchema = z.object({
-  limit: z.number().default(50).optional(),
-  cursor: z
-    .object({
-      id: z.number(),
-    })
-    .optional(),
-});
 export const lanIpsRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     const lanIps = await ctx.db.allLANIps.findMany({
@@ -44,48 +34,259 @@ export const lanIpsRouter = createTRPCRouter({
     }
     return lanIps;
   }),
-  getByCluster: protectedProcedure
+  getNextTenByRange: protectedProcedure
     .input(
       z.object({
         district: z.string(),
+        intent: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const districtId = await ctx.db.district.findUnique({
+      let leasedIp;
+      const district = await ctx.db.district.findUnique({
         where: {
           name: input.district,
         },
         select: {
           id: true,
-        },
-      });
-      if (!districtId) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "the district you picked is not in the DB !",
-        });
-      }
-      const tunnelIps = await ctx.db.allLANIps.findMany({
-        where: {
+          usableLANRange: {
+            select: {
+              id: true,
+              upperLimit: true,
+              lowerLimit: true,
+            },
+          },
           cluster: {
-            id: districtId.id,
+            select: {
+              id: true,
+            },
           },
         },
+      });
+      if (district?.usableLANRange?.upperLimit == undefined) {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message: "we couldn't get the most last ip in this range!",
+        });
+      }
+
+      if (input.intent == "branch") {
+        leasedIp = await ctx.db.leasedBranchIps.findMany({
+          where: {
+            lanRange: {
+              id: district.usableLANRange?.id,
+            },
+          },
+          select: {
+            lanIpAddress: {
+              select: {
+                id: true,
+                ipAddress: true,
+                isReserved: true,
+                isFlagged: true,
+                isTaken: true,
+              },
+            },
+          },
+        });
+      } else {
+        leasedIp = await ctx.db.leasedATMIps.findMany({
+          where: {
+            lanRange: {
+              id: district.usableLANRange?.id,
+            },
+          },
+          select: {
+            lanIpAddress: {
+              select: {
+                id: true,
+                ipAddress: true,
+                isReserved: true,
+                isFlagged: true,
+                isTaken: true,
+              },
+            },
+          },
+        });
+      }
+      const sorted = leasedIp
+        .map(({ lanIpAddress }) => ip.toLong(lanIpAddress.ipAddress))
+        .sort();
+
+      const lastIp = getLastIp({
+        arr: sorted,
+        upperRange: ip.toLong(district.usableLANRange?.upperLimit),
+      });
+      if (!lastIp) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `the district you picked has no ${input.intent}; please insert one manually by the administrator!`,
+        });
+      }
+      const LastLanIp = ip.fromLong(lastIp);
+      const cursor = leasedIp?.find(
+        (item) => item.lanIpAddress.ipAddress == LastLanIp,
+      );
+      const lanIps = await ctx.db.allLANIps.findMany({
+        where: {
+          cluster: {
+            id: district.cluster?.id,
+          },
+          isFlagged: false,
+          isReserved: false,
+          isTaken: false,
+        },
+        cursor: {
+          id: cursor?.lanIpAddress.id,
+        },
+        take: 10,
         select: {
           id: true,
           ipAddress: true,
           isTaken: true,
           isReserved: true,
           isFlagged: true,
+          cluster: {
+            select: {
+              name: true,
+            },
+          },
         },
       });
-      if (!tunnelIps) {
+      if (!lanIps) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "No Tunnel Range Generated Yet!",
         });
       }
-      return tunnelIps;
+      return lanIps;
+    }),
+  getNextByRange: protectedProcedure
+    .input(
+      z.object({
+        district: z.string(),
+        intent: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      let leasedIp;
+      const district = await ctx.db.district.findUnique({
+        where: {
+          name: input.district,
+        },
+        select: {
+          id: true,
+          usableLANRange: {
+            select: {
+              id: true,
+              upperLimit: true,
+              lowerLimit: true,
+            },
+          },
+          cluster: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+      if (district?.usableLANRange?.upperLimit == undefined) {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message: "we couldn't get the most last ip in this range!",
+        });
+      }
+      if (input.intent == "branch") {
+        leasedIp = await ctx.db.leasedBranchIps.findMany({
+          where: {
+            lanRange: {
+              id: district.usableLANRange?.id,
+            },
+          },
+          select: {
+            lanIpAddress: {
+              select: {
+                id: true,
+                ipAddress: true,
+                isReserved: true,
+                isFlagged: true,
+                isTaken: true,
+              },
+            },
+          },
+        });
+      } else {
+        leasedIp = await ctx.db.leasedATMIps.findMany({
+          where: {
+            lanRange: {
+              id: district.usableLANRange?.id,
+            },
+          },
+          select: {
+            lanIpAddress: {
+              select: {
+                id: true,
+                ipAddress: true,
+                isReserved: true,
+                isFlagged: true,
+                isTaken: true,
+              },
+            },
+          },
+        });
+      }
+
+      const sorted = leasedIp
+        .map(({ lanIpAddress }) => ip.toLong(lanIpAddress.ipAddress))
+        .sort();
+
+      const lastIp = getLastIp({
+        arr: sorted,
+        upperRange: ip.toLong(district.usableLANRange?.upperLimit),
+      });
+      if (!lastIp) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `the district you picked has no ${input.intent}; please insert one manually by the administrator!`,
+        });
+      }
+      const LastLanIp = ip.fromLong(lastIp);
+      const cursor = leasedIp.find(
+        (item) => item.lanIpAddress.ipAddress == LastLanIp,
+      );
+      const lanIps = await ctx.db.allLANIps.findMany({
+        where: {
+          cluster: {
+            id: district.cluster?.id,
+          },
+          isFlagged: false,
+          isReserved: false,
+          isTaken: false,
+        },
+        cursor: {
+          id: cursor?.lanIpAddress.id,
+        },
+        take: 1,
+        select: {
+          id: true,
+          ipAddress: true,
+          isTaken: true,
+          isReserved: true,
+          isFlagged: true,
+          cluster: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      });
+      if (!lanIps) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "No Tunnel Range Generated Yet!",
+        });
+      }
+      return lanIps[0];
     }),
   getOne: protectedProcedure
     .input(z.object({ ipAddress: z.string() }))
@@ -110,43 +311,71 @@ export const lanIpsRouter = createTRPCRouter({
       }
       return LAN;
     }),
-  // getInfiniteIps: protectedProcedure
-  //   .input(infiniteIpsSchema)
-  //   .query(async ({ input: { limit = 50, cursor, }, ctx }) => {
-  //     const lanIps = await getInfiniteTunnelIps({
-  //       limit,
-  //       cursor,
-  //       ctx,
-  //     });
-  //     if (!lanIps || lanIps == undefined) {
-  //       throw new TRPCError({ code: "NOT_FOUND", message: "No Tunnel Range Generated Yet!" });
-  //     }
-  //     return lanIps;
-  //   }),
+  getByDistrict: protectedProcedure
+    .input(
+      z.object({
+        district: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const district = await ctx.db.district.findUnique({
+        where: {
+          name: input.district,
+        },
+        select: {
+          id: true,
+          usableLANRange: {
+            select: {
+              id: true,
+              upperLimit: true,
+              lowerLimit: true,
+            },
+          },
+          cluster: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+      if (district?.usableLANRange?.upperLimit == undefined) {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message: "we couldn't get the most last ip in this range!",
+        });
+      }
+      const tunnelIps = await ctx.db.allLANIps.findMany({
+        where: {
+          lanRange: {
+            upperLimit: district.usableLANRange.upperLimit,
+          },
+          isFlagged: false,
+          isReserved: false,
+          isTaken: false,
+        },
+        select: {
+          id: true,
+          isFlagged: true,
+          cluster: {
+            select: {
+              name: true,
+            },
+          },
+          isReserved: true,
+          isTaken: true,
+          ipAddress: true,
+        },
+        orderBy: {
+          ipAddress: "asc",
+        },
+      });
+      if (!tunnelIps) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "No Tunnel Range Generated Yet!",
+        });
+      }
+      return tunnelIps;
+    }),
 });
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function getInfiniteTunnelIps({
-  ctx,
-  limit = 50,
-  cursor,
-}: z.infer<typeof infiniteIpsSchema> & {
-  ctx: inferAsyncReturnType<typeof createTRPCContext>;
-}) {
-  const data = await ctx.db.allTunnelIps.findMany({
-    take: limit + 1,
-    cursor: cursor ? cursor : undefined,
-  });
-
-  let nextCursor: typeof cursor | undefined;
-  if (data.length > limit) {
-    const nextItem = data.pop();
-    if (nextItem != null) {
-      nextCursor = { id: nextItem?.id };
-    }
-  }
-  return {
-    tunnelIps: data,
-    nextCursor,
-  };
-}

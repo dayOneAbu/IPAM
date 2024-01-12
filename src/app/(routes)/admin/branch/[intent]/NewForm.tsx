@@ -18,7 +18,7 @@ import Link from "next/link"
 import { Textarea } from "~/app/_components/ui/textarea"
 import { SubmitButton } from "~/app/_components/buttons"
 import { type ReactNode, useState } from "react"
-import { ArrowLeft, ArrowRight, CheckIcon, ChevronLeft, ChevronsUpDown, } from "lucide-react"
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronsUpDown, } from "lucide-react"
 import { newBranchSchema, type NewBranch } from "~/data/schema"
 import { Popover, PopoverContent, PopoverTrigger } from "~/app/_components/ui/popover"
 import {
@@ -41,7 +41,7 @@ import {
 } from "~/app/_components/ui/card"
 import { map } from "lodash"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/app/_components/ui/tabs"
-import { Metadata } from "next"
+import { type Metadata } from "next"
 
 const steps: {
   id: string;
@@ -63,7 +63,7 @@ const steps: {
       ]
     },
     {
-      id: 'Step ',
+      id: 'Step 3',
       name: 'Pick Branch LAN & Tunnel Address',
       fields: [
         'LanAddress',
@@ -132,10 +132,12 @@ export default function NewBranch({ districts }: {
 
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [previousStep, setPreviousStep] = useState(0)
   const [currentStep, setCurrentStep] = useState(0)
   const [lanOpen, setLanOpen] = useState(false)
   const [tunnelOpen, setTunnelOpen] = useState(false)
+  const [auto, setAuto] = useState(false)
   const form = useForm<z.infer<typeof newBranchSchema>>({
     resolver: zodResolver(newBranchSchema),
     progressive: true,
@@ -149,6 +151,52 @@ export default function NewBranch({ districts }: {
       remark: "",
     }
   })
+  let autoFetchedValues;
+  //queries
+  const allLan = api.lanIps.getNextTenByRange.useQuery(
+    { district: form.getValues('district'), intent: "branch" },
+    {
+      enabled: form.getValues('district') && currentStep === 1 ? true : false
+    }
+  )
+  const allTunnel = api.tunnelIps.getNextTenByRange.useQuery(
+    { district: form.getValues('district'), intent: "branch" },
+    {
+      enabled: form.getValues('district') && currentStep === 1 ? true : false
+    }
+  )
+  const nextLan = api.lanIps.getNextByRange.useQuery(
+    { district: form.getValues('district'), intent: "branch" },
+    {
+      enabled: form.getValues('district') && auto ? true : false
+    }
+  )
+  const nextTunnel = api.tunnelIps.getNextByRange.useQuery(
+    { district: form.getValues('district'), intent: "branch" },
+    {
+      enabled: form.getValues('district') && auto ? true : false
+    }
+  )
+
+  if (nextLan.data && nextTunnel.data) {
+    autoFetchedValues = [
+      {
+        "title": "LAN IP Address",
+        "description": [nextLan.data.ipAddress]
+      },
+      {
+        "title": "Tunnel IP Address",
+        "description": [
+          nextTunnel.data.TunnelIP_DC_ER21,
+          nextTunnel.data.TunnelIP_DC_ER22,
+          nextTunnel.data.TunnelIP_DR_ER11,
+          nextTunnel.data.TunnelIP_DR_ER12,
+        ]
+      }
+    ]
+  }
+  if (nextLan.data) form.setValue("LanAddress", nextLan.data.ipAddress)
+  if (nextTunnel.data) form.setValue("TunnelAddress", nextTunnel.data.TunnelIP_DC_ER21)
 
   function onSubmit(values: NewBranch) {
     setIsSubmitting(true)
@@ -162,9 +210,6 @@ export default function NewBranch({ districts }: {
     if (!output) return
 
     if (currentStep < steps.length - 1) {
-      // if (currentStep === steps.length - 2) {
-      //   await form.handleSubmit(onSubmit)()
-      // }
       setPreviousStep(currentStep)
       setCurrentStep(step => step + 1)
     }
@@ -175,19 +220,6 @@ export default function NewBranch({ districts }: {
       setCurrentStep(step => step - 1)
     }
   }
-
-  const allLan = api.lanIps.getByCluster.useQuery(
-    { district: form.getValues('district') },
-    {
-      enabled: form.getValues('district') ? true : false //&& currentStep === 1
-    }
-  )
-  const allTunnel = api.tunnelIps.getByCluster.useQuery(
-    { district: form.getValues('district') },
-    {
-      enabled: form.getValues('district') && currentStep === 1 ? true : false //&& currentStep === 1
-    }
-  )
 
   return (
     <div className="mx-4 py-6">
@@ -207,41 +239,44 @@ export default function NewBranch({ districts }: {
       <FormProvider {...form}>
         <div className={cn("min-w-5xl mt-5 pt-8 my-auto mx-6 px-8")} >
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl">
-            {currentStep === 0 && (<FormField
-              control={form.control}
-              name="district"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>District</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a District in which the branch is located" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {districts?.map(item => (
-                        <SelectItem
-                          key={item.name}
-                          value={item.name}
-                        >
-                          <div className="flex flex-row justify-between items-center">
-                            <p className="mx-1 uppercase font-medium">
-                              {item.name}
-                            </p>
-                          </div>
-                        </SelectItem>
-                      ))
-                      }
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />)}
+            {currentStep === 0 && (
+              <FormField
+                control={form.control}
+                name="district"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>District</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a District in which the branch is located" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {districts?.map(item => (
+                          <SelectItem
+                            disabled={item.name == "atms"}
+                            key={item.name}
+                            value={item.name}
+                          >
+                            <div className="flex flex-row justify-between items-center">
+                              <p className="mx-1 uppercase font-medium">
+                                {item.name}
+                              </p>
+                            </div>
+                          </SelectItem>
+                        ))
+                        }
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             {currentStep === 1 && (
               <>
                 <FormField
@@ -287,10 +322,14 @@ export default function NewBranch({ districts }: {
               </>
             )}
             {currentStep === 2 && (
-              <Tabs defaultValue="account" className="">
+              <Tabs defaultValue="auto" className="">
                 <TabsList className="grid w-full grid-cols-2 gap-1">
-                  <TabsTrigger value="auto">Automatic</TabsTrigger>
-                  <TabsTrigger value="manual">Manual</TabsTrigger>
+                  <TabsTrigger value="auto">
+                    Automatic
+                  </TabsTrigger>
+                  <TabsTrigger value="manual">
+                    Manual
+                  </TabsTrigger>
                 </TabsList>
                 <TabsContent value="auto">
                   <Card>
@@ -301,12 +340,16 @@ export default function NewBranch({ districts }: {
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-2">
-                      <p className="space-y-1">
-                        <h3>name</h3>
-                      </p>
+                      {autoFetchedValues && (
+                        <ShowAutoInput values={autoFetchedValues} />
+                      )}
                     </CardContent>
                     <CardFooter>
-                      <Button type="button">Fetch LAN & Tunnel</Button>
+                      <Button
+                        onClick={() => setAuto(true)}
+                        type="button">
+                        Fetch LAN & Tunnel IP Address
+                      </Button>
                     </CardFooter>
                   </Card>
                 </TabsContent>
@@ -317,11 +360,11 @@ export default function NewBranch({ districts }: {
                       <CardDescription>
                         Manually Insert the Next available LAN and Tunnel ip Address.
                         <br />
-                        this method is error prune so please make sure you are accurate.
+                        This method is error prune so please make sure you are accurate.
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-2">
-                      {(allLan.isSuccess && allLan.data) && (
+                      {allLan.data && (
                         <FormField
                           control={form.control}
                           name="LanAddress"
@@ -341,7 +384,7 @@ export default function NewBranch({ districts }: {
                                     >
                                       {field.value
                                         ? allLan.data.find(
-                                          (lan) => lan.id === parseInt(field.value)
+                                          (lan) => lan.ipAddress === field.value
                                         )?.ipAddress
                                         : "Select  LAN Address"}
                                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -363,19 +406,11 @@ export default function NewBranch({ districts }: {
                                               value={lan.ipAddress}
                                               key={lan.ipAddress}
                                               onSelect={() => {
-                                                form.setValue("LanAddress", lan.id.toString())
+                                                form.setValue("LanAddress", lan.ipAddress)
                                                 setLanOpen(false)
                                               }}
                                             >
                                               {lan.ipAddress}
-                                              <CheckIcon
-                                                className={cn(
-                                                  "ml-auto h-4 w-4",
-                                                  lan.id === parseInt(field.value)
-                                                    ? "opacity-100"
-                                                    : "opacity-0"
-                                                )}
-                                              />
                                             </CommandItem>
                                           ))}
                                         </CommandGroup>
@@ -390,7 +425,7 @@ export default function NewBranch({ districts }: {
                           )}
                         />
                       )}
-                      {(allTunnel.isSuccess && allTunnel.data) && (
+                      {allTunnel.data && (
                         <FormField
                           control={form.control}
                           name="TunnelAddress"
@@ -410,7 +445,7 @@ export default function NewBranch({ districts }: {
                                     >
                                       {field.value
                                         ? allTunnel.data.find(
-                                          (tunnel) => tunnel.id === parseInt(field.value)
+                                          (tunnel) => tunnel.TunnelIP_DC_ER21 === field.value
                                         )?.TunnelIP_DC_ER21
                                         : "Select  Tunnel Address"}
                                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -432,19 +467,11 @@ export default function NewBranch({ districts }: {
                                               value={tunnel.TunnelIP_DC_ER21}
                                               key={tunnel.TunnelIP_DC_ER21}
                                               onSelect={() => {
-                                                form.setValue("TunnelAddress", tunnel.id.toString())
+                                                form.setValue("TunnelAddress", tunnel.TunnelIP_DC_ER21)
                                                 setTunnelOpen(false)
                                               }}
                                             >
                                               {tunnel.TunnelIP_DC_ER21}
-                                              <CheckIcon
-                                                className={cn(
-                                                  "ml-auto h-4 w-4",
-                                                  tunnel.id === parseInt(field.value)
-                                                    ? "opacity-100"
-                                                    : "opacity-0"
-                                                )}
-                                              />
                                             </CommandItem>
                                           ))}
                                         </CommandGroup>
@@ -504,6 +531,39 @@ export default function NewBranch({ districts }: {
   )
 }
 
+
+export function ShowAutoInput({ values }: {
+  values: {
+    title: string,
+    description: (string | undefined)[]
+  }[],
+}) {
+  return (
+    <>
+      {
+        values.map(value => (
+          <div
+            key={value.title}
+            className="mb-4 col-span-1 flex  items-start pb-4 last:mb-0 last:pb-0"
+          >
+            <span className="flex h-2 w-2 mx-2 translate-y-1 rounded-full bg-sky-500" />
+            <div className="space-y-1">
+              <p className="text-sm font-medium leading-none">
+                {value.title}
+              </p>
+              {value.description.map(item => (
+                <p key={item} className="text-sm break-words break-all text-muted-foreground">
+                  {item}
+                </p>
+              ))}
+
+            </div>
+          </div>
+        ))
+      }
+    </>
+  )
+}
 export function ConfirmationCard({ values, footer }: {
   footer: ReactNode
   values: {
@@ -533,7 +593,7 @@ export function ConfirmationCard({ values, footer }: {
                 <p className="text-sm font-medium leading-none">
                   {value.title}
                 </p>
-                <p className="text-sm flex-wrap text-muted-foreground">
+                <p className="text-sm break-words break-all text-muted-foreground">
                   {value.description}
                 </p>
               </div>

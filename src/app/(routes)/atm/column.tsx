@@ -5,30 +5,10 @@
 
 import { type ColumnDef } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "~/app/_components/data-table/column-header"
-import { DataTableRowActions } from "~/app/_components/data-table/row-actions"
-import { } from "lucide-react"
-import { type Branch } from "~/data/schema"
-const ActionCell = ({ row }) => {
-  const router = useRouter();
+import { type ATM } from "~/data/schema"
 
-  return (
-    <DataTableRowActions actions={[
-      {
-        action: 'edit',
-        onClick: () => {
-          router.push(`user/edit?email=${row.getValue("email")}`)
-        }
-      },
-      {
-        action: 'delete',
-        onClick: () => {
-          router.push(`user/delete?email=${row.getValue("email")}`)
-        }
-      }
-    ]} />
-  )
-}
-export const columns: ColumnDef<Branch>[] = [
+
+export const columns: ColumnDef<ATM>[] = [
   {
     accessorKey: "id",
     header: ({ column }) => (
@@ -50,7 +30,9 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
-    filterFn: "includesString"
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
   },
   {
     accessorKey: "district",
@@ -64,12 +46,16 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
-    filterFn: "includesString"
+    enableGlobalFilter: false,
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
+
   },
   {
     accessorKey: "wanIpAddress",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="WAN-IP_Address" />
+      <DataTableColumnHeader column={column} title="WAN_IP" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
@@ -77,16 +63,15 @@ export const columns: ColumnDef<Branch>[] = [
           {row.getValue("wanIpAddress")}
         </span>
       </div>
-    )
-    ,
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    ),
+    enableSorting: false,
+    enableColumnFilter: false,
+    enableGlobalFilter: false
   },
   {
     accessorKey: "loopBackAddress",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="LoopBack-IP_Address" />
+      <DataTableColumnHeader column={column} title="LoopBack_IP" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
@@ -94,16 +79,15 @@ export const columns: ColumnDef<Branch>[] = [
           {row.getValue("loopBackAddress")}
         </span>
       </div>
-    )
-    ,
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    ),
+    enableSorting: false,
+    enableColumnFilter: false,
+    enableGlobalFilter: false
   },
   {
     accessorKey: "isOutlet",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="ATM-Type" />
+      <DataTableColumnHeader column={column} title="ATM Type" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
@@ -113,14 +97,14 @@ export const columns: ColumnDef<Branch>[] = [
       </div>
     )
     ,
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
   },
   {
     accessorKey: "lanIpAddress",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="LAN-IP_Address" />
+      <DataTableColumnHeader column={column} title="LAN_IP" />
     ),
     cell: ({ row }) => (
       <div className="flex min-w-[100px] items-center">
@@ -129,10 +113,7 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     )
-    ,
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+
   },
 
   {
@@ -147,10 +128,9 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
-    enableSorting: false
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    enableSorting: false,
+    enableColumnFilter: false,
+    enableGlobalFilter: false
   },
   {
     accessorKey: "tunnelIP_DR_ER12",
@@ -164,10 +144,10 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
-    enableSorting: false
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    enableSorting: false,
+    enableColumnFilter: false,
+    enableGlobalFilter: false
+
   },
   {
     accessorKey: "tunnelIP_DC_ER21",
@@ -181,10 +161,9 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
-    enableSorting: false
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    enableSorting: false,
+    enableColumnFilter: false,
+    enableGlobalFilter: false
   },
   {
     accessorKey: "tunnelIP_DC_ER22",
@@ -198,14 +177,8 @@ export const columns: ColumnDef<Branch>[] = [
         </span>
       </div>
     ),
-    enableSorting: false
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id))
-    // },
+    enableSorting: false,
+    enableColumnFilter: false,
+    enableGlobalFilter: false
   },
-  {
-    id: "actions",
-    cell: ActionCell
-  },
-
 ]

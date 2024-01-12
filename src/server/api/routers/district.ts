@@ -64,7 +64,7 @@ export const districtRouter = createTRPCRouter({
         updatedAt: true,
       },
       orderBy: {
-        updatedAt: "desc",
+        name: "asc",
       },
     });
     if (!district) {

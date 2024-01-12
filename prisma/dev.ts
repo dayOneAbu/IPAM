@@ -2,7 +2,6 @@
 import { hash } from "bcryptjs";
 import { db } from "~/server/db";
 import { clusters, lanRange, tunnelRange } from "./data";
-// import { atm_lanIntersection, branch_lanIntersection } from "./data/lan";
 import tunnelInfo from "./data/tunnelInfo";
 import atm_lanIntersection from "./data/atm-by-br-int.json";
 import branch_lanIntersection from "./data/by-lan-int.json";
@@ -21,6 +20,11 @@ export const generateAndSeedLanIps = () => {
                     name: lan.clusterName.toLowerCase(),
                   },
                 },
+                lanRange: {
+                  connect: {
+                    upperLimit: `10.${lan.upperLimit}.0.0`,
+                  },
+                },
               },
             });
           }
@@ -35,6 +39,11 @@ export const generateAndSeedLanIps = () => {
               cluster: {
                 connect: {
                   name: lan.clusterName.toLowerCase(),
+                },
+              },
+              lanRange: {
+                connect: {
+                  upperLimit: `10.${lan.upperLimit}.0.0`,
                 },
               },
             },
@@ -57,6 +66,11 @@ export function generateAndSeedTunnelIps() {
             cluster: {
               connect: {
                 name: tunnel.clusterName.toLowerCase(),
+              },
+            },
+            tunnelRange: {
+              connect: {
+                upperLimit: `10.220.${tunnel.upperLimit}.254`,
               },
             },
           },
@@ -203,6 +217,30 @@ export async function seedBranch_LeasedBranchIps({
   Tunnel_IP_DC_ER21: string;
 }) {
   try {
+    const district = await db.district.findUnique({
+      where: {
+        name: item.District_Name.toLowerCase(),
+      },
+      select: {
+        id: true,
+        cluster: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        usableTunnelRange: {
+          select: {
+            id: true,
+          },
+        },
+        usableLANRange: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
     const result = await db.branch.create({
       data: {
         name: item.Branch_Name.toLowerCase(),
@@ -215,6 +253,16 @@ export async function seedBranch_LeasedBranchIps({
             authorizedBy: {
               connect: {
                 id: userId,
+              },
+            },
+            tunnelRange: {
+              connect: {
+                id: district?.usableTunnelRange?.id,
+              },
+            },
+            lanRange: {
+              connect: {
+                id: district?.usableLANRange?.id,
               },
             },
             remark: "this is initial seed data",
@@ -241,10 +289,29 @@ export async function seedBranch_LeasedBranchIps({
           },
         },
       },
+      select: {
+        id: true,
+        name: true,
+      },
     });
-    console.log("````````````first````````````");
-    console.log("inserted", result.name);
-    console.log("````````````first````````````");
+    if (result) {
+      await db.allLANIps.update({
+        where: {
+          ipAddress: item.LAN_Address,
+        },
+        data: {
+          isTaken: true,
+        },
+      });
+      await db.allTunnelIps.update({
+        where: {
+          TunnelIP_DC_ER21: Tunnel_IP_DC_ER21,
+        },
+        data: {
+          isTaken: true,
+        },
+      });
+    }
   } catch (error) {
     console.log(error);
   }
