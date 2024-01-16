@@ -345,7 +345,7 @@ export const lanIpsRouter = createTRPCRouter({
           message: "we couldn't get the most last ip in this range!",
         });
       }
-      const tunnelIps = await ctx.db.allLANIps.findMany({
+      const lanIps = await ctx.db.allLANIps.findMany({
         where: {
           lanRange: {
             upperLimit: district.usableLANRange.upperLimit,
@@ -370,12 +370,16 @@ export const lanIpsRouter = createTRPCRouter({
           ipAddress: "asc",
         },
       });
-      if (!tunnelIps) {
+      if (!lanIps) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "No Tunnel Range Generated Yet!",
         });
       }
-      return tunnelIps;
+      const sorted = lanIps
+        .map(({ ipAddress }) => ip.toLong(ipAddress))
+        .sort()
+        .map((item) => ip.fromLong(item));
+      return sorted;
     }),
 });

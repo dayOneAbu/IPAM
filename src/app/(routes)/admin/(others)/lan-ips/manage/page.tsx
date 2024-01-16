@@ -145,8 +145,8 @@ export default function ManageTunnel() {
                             >
                               {field.value
                                 ? allLan.data.find(
-                                  (lan) => lan.ipAddress === field.value
-                                )?.ipAddress
+                                  (lan) => lan === field.value
+                                )
                                 : "Select Starting LAN Ip Address"}
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
@@ -164,15 +164,15 @@ export default function ManageTunnel() {
                                 <CommandGroup>
                                   {allLan.data.map((lan) => (
                                     <CommandItem
-                                      value={lan.ipAddress}
-                                      key={lan.ipAddress}
+                                      value={lan}
+                                      key={lan}
                                       onSelect={() => {
-                                        form.setValue("from", lan.ipAddress)
+                                        form.setValue("from", lan)
                                         setFromOpen(false)
 
                                       }}
                                     >
-                                      {lan.ipAddress}
+                                      {lan}
                                     </CommandItem>
                                   ))}
                                 </CommandGroup>
@@ -204,8 +204,8 @@ export default function ManageTunnel() {
                             >
                               {field.value
                                 ? allLan.data.find(
-                                  (lan) => lan.ipAddress === field.value
-                                )?.ipAddress
+                                  (lan) => lan === field.value
+                                )
                                 : "Select Ending LAN Ip Address"}
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
@@ -223,14 +223,14 @@ export default function ManageTunnel() {
                                 <CommandGroup>
                                   {allLan.data.map((lan) => (
                                     <CommandItem
-                                      value={lan.ipAddress}
-                                      key={lan.ipAddress}
+                                      value={lan}
+                                      key={lan}
                                       onSelect={() => {
-                                        form.setValue("to", lan.ipAddress)
+                                        form.setValue("to", lan)
                                         setToOpen(false)
                                       }}
                                     >
-                                      {lan.ipAddress}
+                                      {lan}
                                     </CommandItem>
                                   ))}
                                 </CommandGroup>

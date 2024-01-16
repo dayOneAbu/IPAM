@@ -187,16 +187,16 @@ export default function NewBranch({ districts }: {
       {
         "title": "Tunnel IP Address",
         "description": [
-          nextTunnel.data.TunnelIP_DC_ER21,
-          nextTunnel.data.TunnelIP_DC_ER22,
           nextTunnel.data.TunnelIP_DR_ER11,
           nextTunnel.data.TunnelIP_DR_ER12,
+          nextTunnel.data.TunnelIP_DC_ER21,
+          nextTunnel.data.TunnelIP_DC_ER22,
         ]
       }
     ]
   }
   if (nextLan.data) form.setValue("LanAddress", nextLan.data.ipAddress)
-  if (nextTunnel.data) form.setValue("TunnelAddress", nextTunnel.data.TunnelIP_DC_ER21)
+  if (nextTunnel.data) form.setValue("TunnelAddress", nextTunnel.data.TunnelIP_DR_ER11)
 
   function onSubmit(values: NewBranch) {
     setIsSubmitting(true)
@@ -445,8 +445,8 @@ export default function NewBranch({ districts }: {
                                     >
                                       {field.value
                                         ? allTunnel.data.find(
-                                          (tunnel) => tunnel.TunnelIP_DC_ER21 === field.value
-                                        )?.TunnelIP_DC_ER21
+                                          (tunnel) => tunnel.TunnelIP_DR_ER11 === field.value
+                                        )?.TunnelIP_DR_ER11
                                         : "Select  Tunnel Address"}
                                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                     </Button>
@@ -464,14 +464,14 @@ export default function NewBranch({ districts }: {
                                         <CommandGroup>
                                           {allTunnel.data.map((tunnel) => (
                                             <CommandItem
-                                              value={tunnel.TunnelIP_DC_ER21}
-                                              key={tunnel.TunnelIP_DC_ER21}
+                                              value={tunnel.TunnelIP_DR_ER11}
+                                              key={tunnel.TunnelIP_DR_ER11}
                                               onSelect={() => {
-                                                form.setValue("TunnelAddress", tunnel.TunnelIP_DC_ER21)
+                                                form.setValue("TunnelAddress", tunnel.TunnelIP_DR_ER11)
                                                 setTunnelOpen(false)
                                               }}
                                             >
-                                              {tunnel.TunnelIP_DC_ER21}
+                                              {tunnel.TunnelIP_DR_ER11}
                                             </CommandItem>
                                           ))}
                                         </CommandGroup>

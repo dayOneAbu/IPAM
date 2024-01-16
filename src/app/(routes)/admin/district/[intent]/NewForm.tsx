@@ -241,7 +241,7 @@ export default function NewForm({ preloadData }: {
                 />
               </>
             ) :
-              <Loading />
+              <Loading text="we are loading data, please wait..." />
             }
             <br />
             <SubmitButton isSubmitting={isSubmitting} />

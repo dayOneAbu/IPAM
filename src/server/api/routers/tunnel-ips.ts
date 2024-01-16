@@ -308,14 +308,14 @@ export const tunnelIpsRouter = createTRPCRouter({
       const { ipAddress } = input;
       const LAN = await ctx.db.allTunnelIps.findUnique({
         where: {
-          TunnelIP_DC_ER21: ipAddress,
+          TunnelIP_DR_ER11: ipAddress,
         },
         select: {
           id: true,
           isFlagged: true,
           isTaken: true,
           isReserved: true,
-          TunnelIP_DC_ER21: true,
+          TunnelIP_DR_ER11: true,
         },
       });
       if (!LAN) {
@@ -379,7 +379,7 @@ export const tunnelIpsRouter = createTRPCRouter({
           },
           isReserved: true,
           isTaken: true,
-          TunnelIP_DC_ER21: true,
+          TunnelIP_DR_ER11: true,
         },
       });
 
@@ -390,7 +390,7 @@ export const tunnelIpsRouter = createTRPCRouter({
         });
       }
       const sorted = tunnelIps
-        .map(({ TunnelIP_DC_ER21 }) => ip.toLong(TunnelIP_DC_ER21))
+        .map(({ TunnelIP_DR_ER11 }) => ip.toLong(TunnelIP_DR_ER11))
         .sort()
         .map((item) => ip.fromLong(item));
       return sorted;

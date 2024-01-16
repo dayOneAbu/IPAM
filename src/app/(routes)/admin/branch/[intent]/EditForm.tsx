@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 'use client'
 
 import type * as z from "zod"
@@ -18,7 +19,7 @@ import Link from "next/link"
 import { Textarea } from "~/app/_components/ui/textarea"
 import { SubmitButton } from "~/app/_components/buttons"
 import { useState } from "react"
-import { ChevronLeft, } from "lucide-react"
+import { CheckCheck, ChevronLeft, X, } from "lucide-react"
 import { newBranchSchema, type NewBranch } from "~/data/schema"
 import { api } from "~/trpc/react"
 import { type Metadata } from "next"
@@ -69,7 +70,8 @@ export default function EditBranch({ districts, branch }: {
   } | null
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [check, setCheck] = useState(false)
+  const [checkLan, setCheckLan] = useState(false)
+  const [checkTunnel, setCheckTunnel] = useState(false)
   const form = useForm<z.infer<typeof newBranchSchema>>({
     resolver: zodResolver(newBranchSchema),
     progressive: true,
@@ -78,18 +80,22 @@ export default function EditBranch({ districts, branch }: {
       name: branch?.name,
       district: branch?.district.name,
       LanAddress: branch?.ipWithTunnel?.lanIpAddress.ipAddress,
-      TunnelAddress: branch?.ipWithTunnel?.tunnelIpAddress.TunnelIP_DC_ER21,
+      TunnelAddress: branch?.ipWithTunnel?.tunnelIpAddress.TunnelIP_DR_ER11,
       wanAddress: branch?.wanAddress,
       remark: branch?.remark,
     }
   })
   const allLan = api.lanIps.getOne.useQuery(
     { ipAddress: form.getValues('LanAddress') },
-    { enabled: check }
+    { enabled: checkLan }
   )
   const allTunnel = api.tunnelIps.getOne.useQuery(
     { ipAddress: form.getValues('TunnelAddress') },
-    { enabled: check }
+    {
+      enabled: checkTunnel,
+
+    }
+
   )
 
   function onSubmit(values: NewBranch) {
@@ -97,12 +103,23 @@ export default function EditBranch({ districts, branch }: {
     console.log("values", values)
     setIsSubmitting(false)
   }
-  function handleCheck() {
-    console.log("clicked")
-    setCheck(true)
+  function handleTunnelCheck() {
+    setCheckTunnel(true)
+    console.log("checkTunnel", checkTunnel)
+    console.log("checkTunnel", allTunnel.isFetched)
+    allTunnel.isFetched ?? setCheckTunnel(false)
+    console.log("checkTunnel", checkTunnel)
+    console.log("checkTunnel", allTunnel.isFetched)
   }
-  console.log("lan", allLan.data)
-  console.log("tunnel", allTunnel.data)
+  function handleLanCheck() {
+    setCheckLan(true)
+    console.log("checkLan", checkLan)
+    console.log("checkLan", allLan.isFetched)
+    allLan.isFetched ?? setCheckLan(false)
+    console.log("checkLan", checkLan)
+    console.log("checkLan", allLan.isFetched)
+  }
+
 
 
   return (
@@ -186,46 +203,84 @@ export default function EditBranch({ districts, branch }: {
               )}
             />
             <div className="flex justify-between items-end">
-              <div className="flex-1">
-                <FormField
-                  control={form.control}
-                  name="LanAddress"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>LAN Address</FormLabel>
-                      <FormMessage />
-                      <FormControl>
-                        <Input type="text" {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="TunnelAddress"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Tunnel Address</FormLabel>
-                      <FormMessage />
-                      <FormControl>
-                        <Input type="text" {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <Button
-                type="button"
-                className="mx-2 px-2"
-                disabled={
-                  !form.formState.touchedFields.LanAddress ??
-                  !form.formState.touchedFields.TunnelAddress
-                }
-                variant={"secondary"}
-                onClick={handleCheck}
-              >
-                Check Availability
-              </Button>
+              <>
+                <div className="flex-1 flex flex-row items-center justify-between ">
+                  <div className="flex-1 items-center">
+                    <FormField
+                      control={form.control}
+                      name="LanAddress"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>LAN Address</FormLabel>
+                          <FormMessage />
+                          <FormControl>
+                            <Input type="text" {...field} />
+                          </FormControl>
+
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  {
+                    allLan.data?.isTaken || allLan.data?.isFlagged || allLan.data?.isReserved ?
+                      (
+                        <X className={`h-6 w-6 mt-6 text-brand-purple ${checkLan ? "block" : "hidden"}`} />
+                      ) : (
+                        <CheckCheck className={`h-6 w-6 mt-6 text-brand-purple ${checkLan ? "block" : "hidden"}`} />
+                      )
+                  }
+                </div>
+                <Button
+                  type="button"
+                  className="mx-2 px-2"
+                  disabled={
+                    !form.formState.touchedFields.LanAddress
+                  }
+                  variant={"secondary"}
+                  onClick={handleLanCheck}
+                >
+                  Check LAN Availability
+                </Button>
+              </>
+            </div>
+            <div className="flex justify-between items-end">
+              <>
+                <div className="flex-1 flex flex-row items-center justify-between ">
+                  <div className="flex-1 items-center">
+                    <FormField
+                      control={form.control}
+                      name="TunnelAddress"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tunnel Address</FormLabel>
+                          <FormMessage />
+                          <FormControl>
+                            <Input type="text" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  {allTunnel.data?.isTaken || allTunnel.data?.isFlagged || allTunnel.data?.isReserved ?
+                    (
+                      <X className={`h-6 w-6 mt-6 text-brand-purple ${checkTunnel ? "block" : "hidden"}`} />
+                    ) : (
+                      <CheckCheck className={`h-6 w-6 mt-6 text-brand-purple ${checkTunnel ? "block" : "hidden"}`} />
+                    )
+                  }
+                </div>
+                <Button
+                  type="button"
+                  className="mx-2 px-2"
+                  disabled={
+                    !form.formState.touchedFields.TunnelAddress
+                  }
+                  variant={"secondary"}
+                  onClick={handleTunnelCheck}
+                >
+                  Check Tunnel Availability
+                </Button>
+              </>
             </div>
 
             <FormField

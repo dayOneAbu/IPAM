@@ -7,8 +7,10 @@ export default async function Home() {
     redirect("/api/auth/signin");
   }
   return (
-    <p className="text-center text-2xl">
-      {session && <span>Logged in as {session.user?.email}</span>}
-    </p>
+    <div>
+      <p className="text-center text-2xl">
+        {session && <span>Logged in as {session.user?.email}</span>}
+      </p>
+    </div>
   );
 }
