@@ -34,7 +34,7 @@ export default async function TunnelRangePage() {
         <div>
           <h2 className="text-2xl font-bold tracking-tight">All Possible Tunnel-Ips</h2>
           <p className="text-muted-foreground">
-            Here&apos;s a list of all tunnel IP address, generated based on the designated tunnel ip address formula used by CBE.
+            Here&apos;s a list of all tunnel IP address, generated based on the designated tunnel ip address formula used by GTS.
           </p>
         </div>
         <Link href={`tunnel-ips/manage`} className="space-y-1">

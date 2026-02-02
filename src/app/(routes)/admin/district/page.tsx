@@ -31,7 +31,7 @@ export default async function DistrictPage() {
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Districts</h2>
           <p className="text-muted-foreground">
-            Here&apos;s a list of CBE District&apos;s with all valuable information!
+            Here&apos;s a list of GTS District&apos;s with all valuable information!
           </p>
         </div>
         <Link href={`district/new`} className="space-y-1">

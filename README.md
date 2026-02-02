@@ -1,10 +1,10 @@
 # IP Address Management System (IPAM)
 
-A comprehensive internal dashboard for managing network infrastructure IP allocations across banking operations.
+A comprehensive internal dashboard for managing network infrastructure IP allocations across enterprise operations.
 
 ## 🎯 Problem
 
-Managing IP addresses in a large banking network with hundreds of branches, ATMs, and distributed systems is complex and error-prone:
+Managing IP addresses in a large enterprise network with multiple locations, devices, and distributed systems is complex and error-prone:
 
 - **IP Address Conflicts**: Manual IP allocation leads to conflicts and network outages
 - **Poor Visibility**: No centralized view of IP usage across districts, branches, and ATMs
@@ -14,7 +14,7 @@ Managing IP addresses in a large banking network with hundreds of branches, ATMs
 
 ## ✅ Solution
 
-IPAM provides a centralized, web-based dashboard that solves these challenges with:
+IPAM provides a centralized, web-based dashboard that solves these challenges with enterprise-grade features:
 
 - **Centralized IP Management**: Single source of truth for all IP allocations
 - **Automated Conflict Prevention**: System prevents duplicate IP assignments
@@ -31,9 +31,9 @@ IPAM provides a centralized, web-based dashboard that solves these challenges wi
 - Automatic IP pool generation from defined ranges
 
 ### Device Management
-- Track IP assignments for branches and ATMs
+- Track IP assignments for offices and devices
 - Automated lease management with conflict detection
-- Location-based IP allocation (district → branch → ATM)
+- Hierarchical IP allocation (region → location → device)
 
 ### User Management
 - Role-based access control (Admin, Manager, User)
@@ -171,7 +171,7 @@ Key entities managed by the system:
 
 ## 📝 License
 
-This project is proprietary software for internal banking operations.
+This project is proprietary software for internal enterprise operations.
 
 ## 🆘 Support
 

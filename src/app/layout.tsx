@@ -7,7 +7,7 @@ import { Toaster } from "./_components/ui/toaster";
 
 
 export const metadata = {
-  title: "CBE Watch App",
+  title: "GTS IPAM System",
   description: "web app to monitor network devices and their configuration",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };

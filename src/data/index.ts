@@ -8,8 +8,8 @@ import {
   Satellite,
   User,
 } from "lucide-react";
-import * as CBElogo from "../../public/CBElogo.png";
-export default CBElogo;
+import * as GTSlogo from "../../public/GTSlogo.png";
+export default GTSlogo;
 export const navLinks = [
   { name: "Branches", href: "/branch", icon: Landmark, current: true },
   { name: "ATMs", href: "/atm", icon: Calculator, current: false },

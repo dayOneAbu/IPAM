@@ -32,7 +32,7 @@ export default async function TunnelRangePage() {
         <div>
           <h2 className="text-2xl font-bold tracking-tight">All Possible LAN-Ips</h2>
           <p className="text-muted-foreground">
-            Here&apos;s a list of all LAN IP address, generated based on the designated LAN ip ranges address formula used by CBE.
+            Here&apos;s a list of all LAN IP address, generated based on the designated LAN ip ranges address formula used by GTS.
           </p>
         </div>
         <Link href={`lan-ips/manage`} className="space-y-1">

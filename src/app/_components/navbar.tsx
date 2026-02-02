@@ -6,7 +6,7 @@ import Image from "next/image"
 // import { getServerAuthSession } from "~/server/auth"
 import { LogoutButton } from "./buttons"
 import { Separator } from "./ui/separator"
-import CBElogo from "~/data"
+import GTSlogo from "~/data"
 import NavBarLink from "./NavBarLink"
 import { type Session } from "next-auth"
 import { ScrollArea } from "./ui/scroll-area"
@@ -20,7 +20,7 @@ export function Sidebar({ className, session }: {
     <ScrollArea className=" w-full">
       <div className="bg-brand-black">
         <Link href={"/"} className="mt-8 mx-2">
-          <Image src={CBElogo} sizes="100vw" className="h-20 w-full" alt="cbe logo" />
+          <Image src={GTSlogo} sizes="100vw" className="h-20 w-full" alt="gts logo" />
         </Link>
       </div>
 

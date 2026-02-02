@@ -16,7 +16,7 @@ export default async function TunnelRangePage() {
         <div>
           <h2 className="text-2xl font-bold tracking-tight">All possible LAN ranges</h2>
           <p className="text-muted-foreground">
-            Here&apos;s a list of all Tunnel IP ranges, information related to tunnel range schema designated by CBE Network infrastructure team
+            Here&apos;s a list of all Tunnel IP ranges, information related to tunnel range schema designated by GTS Network infrastructure team
           </p>
         </div>
       </div>

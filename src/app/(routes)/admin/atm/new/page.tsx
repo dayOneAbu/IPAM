@@ -59,7 +59,7 @@ export default function NewPage() {
       <div className="space-y-2 mx-6">
         <h2 className="text-2xl font-bold tracking-tight">New Branch</h2>
         <p className="text-muted-foreground">
-          Here&apos;s a list of required information to be inserted for CBE Branch <br />
+          Here&apos;s a list of required information to be inserted for GTS Branch <br />
           please fill all required information
         </p>
       </div>

@@ -48,7 +48,7 @@ export default async function BranchPage() {
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Branches</h2>
           <p className="text-muted-foreground">
-            Here&apos;s a list of CBE Branches with all valuable information!
+            Here&apos;s a list of GTS Branches with all valuable information!
           </p>
         </div>
         <Link href={`branch/new`} className="space-y-1">

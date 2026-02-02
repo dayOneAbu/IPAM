@@ -59,7 +59,7 @@ export default async function atmPage() {
         <div>
           <h2 className="text-2xl font-bold tracking-tight">ATM&apos;s</h2>
           <p className="text-muted-foreground">
-            Here&apos;s a list of CBE ATM with all valuable information!
+            Here&apos;s a list of GTS ATM with all valuable information!
           </p>
         </div>
         <Link href={`atm/new`} className="space-y-1">
