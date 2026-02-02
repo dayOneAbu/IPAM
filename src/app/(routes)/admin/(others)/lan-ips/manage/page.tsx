@@ -25,7 +25,7 @@ import { RadioGroup, RadioGroupItem } from "~/app/_components/ui/radio-group"
 import { SubmitButton } from "~/app/_components/buttons"
 import Loading from "~/app/_components/loading"
 
-export const manageLanIps = z.object({
+const manageLanIps = z.object({
   from: z
     .string({ required_error: "please set starting LAN-Ip" }),
   to: z

@@ -3,13 +3,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client"
 
-import { type ColumnDef } from "@tanstack/react-table"
+import { type ColumnDef, type Row } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "~/app/_components/data-table/column-header"
 import { DataTableRowActions } from "~/app/_components/data-table/row-actions"
 import { type ATM } from "~/data/schema"
 import { useRouter } from "next/navigation"
 
-const ActionCell = ({ row }) => {
+const ActionCell = ({ row }: { row: Row<ATM> }) => {
   const router = useRouter();
 
   return (
@@ -17,13 +17,13 @@ const ActionCell = ({ row }) => {
       {
         action: 'edit',
         onClick: () => {
-          router.push(`branch/edit?id=${row.getValue("id")}`)
+          router.push(`branch/edit?id=${String(row.getValue("id"))}`)
         }
       },
       {
         action: 'delete',
         onClick: () => {
-          router.push(`branch/edit?id=${row.getValue("id")}`)
+          router.push(`branch/edit?id=${String(row.getValue("id"))}`)
         }
       }
     ]} />

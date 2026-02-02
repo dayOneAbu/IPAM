@@ -275,7 +275,7 @@ export default function EditForm({ preloadData, district }: {
                 />
               </>
             ) :
-              <Loading />
+              <Loading text="district data" />
             }
             <br />
             <SubmitButton isSubmitting={isSubmitting} />

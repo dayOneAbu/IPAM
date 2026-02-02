@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client"
 
-import type { ColumnDef } from "@tanstack/react-table"
+import type { ColumnDef, Row } from "@tanstack/react-table"
 import { useRouter } from "next/navigation"
 import { DataTableColumnHeader } from "~/app/_components/data-table/column-header"
 import { DataTableRowActions } from "~/app/_components/data-table/row-actions"
@@ -11,7 +11,7 @@ import { DataTableRowActions } from "~/app/_components/data-table/row-actions"
 import { type User } from "~/data/schema"
 
 
-const ActionCell = ({ row }) => {
+const ActionCell = ({ row }: { row: Row<User> }) => {
   const router = useRouter();
 
   return (
@@ -19,13 +19,13 @@ const ActionCell = ({ row }) => {
       {
         action: 'edit',
         onClick: () => {
-          router.push(`user/edit?email=${row.getValue("email")}`)
+          router.push(`user/edit?email=${String(row.getValue("email"))}`)
         }
       },
       {
         action: 'delete',
         onClick: () => {
-          router.push(`user/delete?email=${row.getValue("email")}`)
+          router.push(`user/delete?email=${String(row.getValue("email"))}`)
         }
       }
     ]} />

@@ -20,7 +20,7 @@ const formSchema = z.object({
   password: z.string().min(5, { message: "please provide password" }),
 })
 
-export default function UserAuthForm({ ...props }) {
+export default function UserAuthForm() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const params = useSearchParams()
@@ -41,7 +41,7 @@ export default function UserAuthForm({ ...props }) {
   }
   return (
     <FormProvider {...form}>
-      <div className={cn("grid gap-6 max-w-3xl pt-8 my-auto mx-auto")} {...props}>
+      <div className={cn("grid gap-6 max-w-3xl pt-8 my-auto mx-auto")}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
           <FormField

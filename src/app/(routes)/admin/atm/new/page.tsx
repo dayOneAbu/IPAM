@@ -42,7 +42,7 @@ export default function NewPage() {
     progressive: true,
     shouldFocusError: true
   })
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(_values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
     setTimeout(() => {
 
@@ -136,14 +136,14 @@ export default function NewPage() {
                   <FormDescription>Choose the type of ATM being inserted</FormDescription>
                   <FormControl>
                     <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      onValueChange={(value) => field.onChange(value === "true")}
+                      defaultValue={field.value?.toString()}
                       className="flex flex-col space-y-1"
                     >
 
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value={true} />
+                          <RadioGroupItem value="true" />
                         </FormControl>
                         <FormLabel className="font-normal">
                           Outlet
@@ -151,7 +151,7 @@ export default function NewPage() {
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value={false} />
+                          <RadioGroupItem value="false" />
                         </FormControl>
                         <FormLabel className="font-normal">Branch Extension</FormLabel>
                       </FormItem>

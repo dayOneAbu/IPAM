@@ -60,7 +60,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     session({ session, token }) {
-      if (token?.id) {
+      if (token?.id && token?.email) {
         session.user = {
           id: token.id,
           isAdmin: token.isAdmin,
@@ -101,7 +101,10 @@ export const authOptions: NextAuthOptions = {
         });
         // If no error and we have user data, return it
         if (user) {
-          return user;
+          return {
+            ...user,
+            id: String(user.id), // Convert id to string for NextAuth
+          };
         }
         // Return null if user data could not be retrieved
         return null;

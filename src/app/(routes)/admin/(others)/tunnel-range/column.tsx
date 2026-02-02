@@ -70,7 +70,7 @@ export const columns: ColumnDef<LANRange>[] = [
       <DataTableColumnHeader column={column} title="Districts" />
     ),
     cell: ({ row }) => {
-      const districts: [] = row.getValue("District")
+      const districts: { name: string }[] = row.getValue("District")
       return (
         <>
           {districts.map((item, idx) => (
