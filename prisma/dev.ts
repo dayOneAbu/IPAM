@@ -316,91 +316,91 @@ export async function seedBranch_LeasedBranchIps({
     console.log(error);
   }
 }
-// export function seedATM_LeasedATMIps({ userId }: { userId: number }) {
-//   atm_lanIntersection.map(async (atm) => {
-//     if (
-//       atm.District_Name.toLowerCase() == "head office" ||
-//       atm.District_Name.toLowerCase() == "shira"
-//     ) {
-//       return;
-//     } else if (atm.WAN_Address == null) {
-//       return;
-//     } else {
-//       return await db.aTM.create({
-//         data: {
-//           name: "atm.Branch_Name.toLowerCase()",
-//           remark: "this is initial seed data",
-//           wanAddress: "atm.WAN_Address.toLowerCase()",
-//           loopBackAddress: "",
-//           isOutlet: false,
-//           LeasedATMIps: {
-//             create: {
-//               // atm: {
-//               //   connect: {
-//               //     name: "",
-//               //   },
-//               // },
-//               remark: "this is initial seed data",
-//               authorizedBy: {
-//                 connect: {
-//                   id: userId,
-//                 },
-//               },
-//               lanIpAddress: {
-//                 connect: {
-//                   ipAddress: "atm.LAN_Address",
-//                 },
-//               },
-//               tunnelIpAddress: {
-//                 connect: {
-//                   id: 1,
-//                 },
-//               },
-//             },
-//           },
+export function seedATM_LeasedATMIps({ userId }: { userId: number }) {
+  atm_lanIntersection.map(async (atm) => {
+    if (
+      atm.District_Name.toLowerCase() == "head office" ||
+      atm.District_Name.toLowerCase() == "shira"
+    ) {
+      return;
+    } else if (atm.WAN_Address == null) {
+      return;
+    } else {
+      return await db.aTM.create({
+        data: {
+          name: "atm.Branch_Name.toLowerCase()",
+          remark: "this is initial seed data",
+          wanAddress: "atm.WAN_Address.toLowerCase()",
+          loopBackAddress: "",
+          isOutlet: false,
+          LeasedATMIps: {
+            create: {
+              // atm: {
+              //   connect: {
+              //     name: "",
+              //   },
+              // },
+              remark: "this is initial seed data",
+              authorizedBy: {
+                connect: {
+                  id: userId,
+                },
+              },
+              lanIpAddress: {
+                connect: {
+                  ipAddress: "atm.LAN_Address",
+                },
+              },
+              tunnelIpAddress: {
+                connect: {
+                  id: 1,
+                },
+              },
+            },
+          },
 
-//           // ipWithTunnel: {
-//           //   create: {
-//           //     isReserved: false,
-//           //     isTaken: true,
-//           //     authorizedBy: {
-//           //       connect: {
-//           //         id: userId,
-//           //       },
-//           //     },
-//           //     remark: "this is initial seed data",
-//           //     lanIpAddress: {
-//           //       connect: {
-//           //         ipAddress: atm.LAN_Address,
-//           //       },
-//           //     },
-//           // tunnelIpAddress: {
-//           //   connect: {
-//           //     id:1
-//           //   }
-//           // }
-//           //     // branch: {
-//           //     //   connect: {
-//           //     //     name: atm.Branch_Name.toLowerCase(),
-//           //     //   },
-//           //     // },
-//           //   },
-//           // },
-//           createdBy: {
-//             connect: {
-//               id: userId,
-//             },
-//           },
-//           district: {
-//             connect: {
-//               name: atm.District_Name.toLowerCase(),
-//             },
-//           },
-//         },
-//       });
-//     }
-//   });
-// }
+          // ipWithTunnel: {
+          //   create: {
+          //     isReserved: false,
+          //     isTaken: true,
+          //     authorizedBy: {
+          //       connect: {
+          //         id: userId,
+          //       },
+          //     },
+          //     remark: "this is initial seed data",
+          //     lanIpAddress: {
+          //       connect: {
+          //         ipAddress: atm.LAN_Address,
+          //       },
+          //     },
+          // tunnelIpAddress: {
+          //   connect: {
+          //     id:1
+          //   }
+          // }
+          //     // branch: {
+          //     //   connect: {
+          //     //     name: atm.Branch_Name.toLowerCase(),
+          //     //   },
+          //     // },
+          //   },
+          // },
+          createdBy: {
+            connect: {
+              id: userId,
+            },
+          },
+          district: {
+            connect: {
+              name: atm.District_Name.toLowerCase(),
+            },
+          },
+        },
+      });
+    }
+  });
+}
 
 async function seed() {
   // //step1: seed Cluster and district
@@ -432,42 +432,42 @@ async function seed() {
   // //step6: generateAndSeedTunnelIps
   // generateAndSeedTunnelIps();
   // //step7: seed branch's and seed LeasedBranchIps
-  branch_lanIntersection.map(async (branch) => {
-    if (
-      branch.District_Name.toLowerCase() == "head office" ||
-      branch.District_Name.toLowerCase() == "shira"
-    ) {
-      return;
-    } else if (
-      branch.LAN_Address == undefined ||
-      branch.WAN_Address == undefined
-    ) {
-      return;
-    } else {
-      const tunnel_res = tunnelInfo.find((item) => {
-        if (item.Branch_Name == null || item.Branch_Name == undefined) {
-          return null;
-        } else if (
-          item.Branch_Name.toLowerCase() == branch.Branch_Name.toLowerCase()
-        ) {
-          return item;
-        } else {
-          return null;
-        }
-      });
-      if (tunnel_res?.Tunnel_IP_DC_ER21 == undefined) {
-        return;
-      } else {
-        return await seedBranch_LeasedBranchIps({
-          item: branch,
-          Tunnel_IP_DC_ER21: tunnel_res.Tunnel_IP_DC_ER21,
-          userId: admin.id,
-        });
-      }
-    }
-  });
+  // branch_lanIntersection.map(async (branch) => {
+  //   if (
+  //     branch.District_Name.toLowerCase() == "head office" ||
+  //     branch.District_Name.toLowerCase() == "shira"
+  //   ) {
+  //     return;
+  //   } else if (
+  //     branch.LAN_Address == undefined ||
+  //     branch.WAN_Address == undefined
+  //   ) {
+  //     return;
+  //   } else {
+  //     const tunnel_res = tunnelInfo.find((item) => {
+  //       if (item.Branch_Name == null || item.Branch_Name == undefined) {
+  //         return null;
+  //       } else if (
+  //         item.Branch_Name.toLowerCase() == branch.Branch_Name.toLowerCase()
+  //       ) {
+  //         return item;
+  //       } else {
+  //         return null;
+  //       }
+  //     });
+  //     if (tunnel_res?.Tunnel_IP_DC_ER21 == undefined) {
+  //       return;
+  //     } else {
+  //       return await seedBranch_LeasedBranchIps({
+  //         item: branch,
+  //         Tunnel_IP_DC_ER21: tunnel_res.Tunnel_IP_DC_ER21,
+  //         userId: admin.id,
+  //       });
+  //     }
+  //   }
+  // });
   // //step8: seed LeasedATMIps
-  // seedATM_LeasedATMIps({ userId: admin.id });
+  seedATM_LeasedATMIps({ userId: admin.id });
 }
 
 void seed();
