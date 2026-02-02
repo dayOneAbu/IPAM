@@ -1,76 +1,178 @@
-# IP Watcher
+# IP Address Management System (IPAM)
 
-A Next.js internal dashboard for managing LAN and tunnel IP allocations across clusters, districts, branches, and ATMs.
+A comprehensive internal dashboard for managing network infrastructure IP allocations across banking operations.
 
-## Overview
-- Tracks IP ranges (`LANRange`, `TunnelRange`) and individual IP pools (`AllLANIps`, `AllTunnelIps`).
-- Manages leases for branches and ATMs (`LeasedBranchIps`, `LeasedATMIps`).
-- Users and role-based operations are stored in the database (`User`).
+## 🎯 Problem
 
-## Tech stack
-- Next.js (App Router)
-- tRPC (server and client)
-- Prisma (Postgres) as ORM
-- NextAuth for authentication
-- Tailwind CSS for styling
-- Zod for validation
+Managing IP addresses in a large banking network with hundreds of branches, ATMs, and distributed systems is complex and error-prone:
 
-## Quickstart (development)
-Install dependencies and run the dev server:
+- **IP Address Conflicts**: Manual IP allocation leads to conflicts and network outages
+- **Poor Visibility**: No centralized view of IP usage across districts, branches, and ATMs
+- **Inefficient Resource Management**: Difficulty tracking which IPs are leased, available, or reserved
+- **Security Risks**: Lack of audit trails and role-based access control
+- **Scalability Issues**: Managing LAN and tunnel IP ranges across multiple clusters and districts
+
+## ✅ Solution
+
+IPAM provides a centralized, web-based dashboard that solves these challenges with:
+
+- **Centralized IP Management**: Single source of truth for all IP allocations
+- **Automated Conflict Prevention**: System prevents duplicate IP assignments
+- **Real-time Visibility**: Dashboard showing IP usage across all locations and devices
+- **Role-Based Access Control**: Secure access with different permission levels
+- **Audit Trail**: Complete tracking of IP assignments and changes
+- **Efficient Resource Utilization**: Automated IP leasing for branches and ATMs
+
+## 🌟 Key Features
+
+### IP Range Management
+- Define and manage LAN IP ranges for different districts and clusters
+- Configure tunnel IP ranges for secure inter-branch connectivity
+- Automatic IP pool generation from defined ranges
+
+### Device Management
+- Track IP assignments for branches and ATMs
+- Automated lease management with conflict detection
+- Location-based IP allocation (district → branch → ATM)
+
+### User Management
+- Role-based access control (Admin, Manager, User)
+- Secure authentication with NextAuth
+- Audit logging for all IP changes
+
+### Administrative Tools
+- Bulk IP operations and management
+- Real-time dashboards and reporting
+- Database-backed with full audit history
+
+## 🛠️ Technology Stack
+
+- **Frontend**: Next.js 14 (App Router) with TypeScript
+- **Backend**: tRPC for type-safe APIs
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: NextAuth.js with role-based access
+- **Styling**: Tailwind CSS with shadcn/ui components
+- **Validation**: Zod for schema validation
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+
+- PostgreSQL database
+- pnpm package manager
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/dayOneAbu/IPAM.git
+cd ip-watcher
+
+# Install dependencies
 pnpm install
-pnpm run dev
+
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your database URL and auth secrets
 ```
 
-Default useful scripts (see `package.json`):
-
-- `pnpm run dev` — start Next.js in development mode
-- `pnpm run build` — production build
-- `pnpm start` — start production server
-- `pnpm run db:push` — push Prisma schema to DB
-- `pnpm run db:migrate` — create/apply migrations (dev)
-- `pnpm run db:studio` — launch Prisma Studio
-- `pnpm run seed:dev` — run dev seeder (if present)
-
-## Environment variables
-The app validates server-side env vars using `@t3-oss/env-nextjs` (see [src/env.mjs](src/env.mjs#L1-L200)). At minimum provide:
-
-- `DATABASE_URL` — Postgres connection string
-- `NEXTAUTH_SECRET` — secret for NextAuth in production
-- `NEXTAUTH_URL` — base URL for NextAuth callbacks
-
-Run dev with env validation skipped (useful for Docker builds):
+### Database Setup
 
 ```bash
-SKIP_ENV_VALIDATION=1 pnpm run dev
-```
+# Push schema to database
+pnpm run db:push
 
-## Database / Prisma
-- Schema: [prisma/schema.prisma](prisma/schema.prisma#L1-L200)
-- Generate client on install (`postinstall` runs `prisma generate`)
-- Typical workflow when changing models:
-
-```bash
-# update prisma/schema.prisma
-pnpm run db:migrate
+# (Optional) Open Prisma Studio to view data
 pnpm run db:studio
 ```
 
-## Where the code lives
-- App pages and components: `src/app` and `src/app/_components`
-- Server APIs: `src/server/api/routers/*` and aggregated at [src/server/api/root.ts](src/server/api/root.ts#L1-L80)
-- tRPC client/server helpers: `src/trpc`
-- Auth helpers: `src/server/auth.ts` (used in pages)
+### Development
 
-Example: the `auth` router is at [src/server/api/routers/auth.ts](src/server/api/routers/auth.ts#L1-L200).
+```bash
+# Start development server
+pnpm run dev
+```
 
-## How requests flow
-1. UI calls the tRPC client in `src/trpc`.
-2. tRPC routes map to `appRouter` in `src/server/api/root.ts`.
-3. Routers use `ctx.db` (Prisma client) to query the Postgres DB.
+Visit `http://localhost:3000` to access the application.
 
-## Next steps / common tasks
-- Add a new API endpoint: create router in `src/server/api/routers` and register it in `src/server/api/root.ts`.
-- Modify DB model: edit `prisma/schema.prisma`, run migrations, and regenerate Prisma Client.
-- UI development: add or edit pages under `src/app` and components under `src/app/_components`.
+## 📋 Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `pnpm run dev` | Start development server |
+| `pnpm run build` | Create production build |
+| `pnpm start` | Start production server |
+| `pnpm run db:push` | Push schema to database |
+| `pnpm run db:migrate` | Create and run migrations |
+| `pnpm run db:studio` | Open Prisma Studio |
+| `pnpm run lint` | Run ESLint |
+
+## 🔧 Environment Variables
+
+Create a `.env.local` file with the following variables:
+
+```env
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/ipam_db"
+
+# Authentication
+NEXTAUTH_SECRET="your-secret-key-here"
+NEXTAUTH_URL="http://localhost:3000"
+
+# Optional: Skip env validation during builds
+SKIP_ENV_VALIDATION=1
+```
+
+## 🏗️ Project Structure
+
+```
+src/
+├── app/                    # Next.js app router pages
+│   ├── (routes)/          # Main application routes
+│   ├── api/               # API routes (NextAuth)
+│   └── _components/       # Shared UI components
+├── server/
+│   ├── api/               # tRPC routers and configuration
+│   ├── auth.ts            # Authentication logic
+│   └── db.ts              # Database connection
+├── trpc/                  # tRPC client configuration
+└── lib/                   # Utility functions
+```
+
+## 🔐 Authentication & Authorization
+
+The system uses role-based access control with three main roles:
+
+- **Admin**: Full system access, user management
+- **Manager**: District/cluster management, IP range oversight
+- **User**: Read-only access, limited IP management
+
+## 📊 Database Schema
+
+Key entities managed by the system:
+
+- **Users**: System users with roles and permissions
+- **Clusters**: Geographic groupings of districts
+- **Districts**: Regional administrative divisions
+- **Branches**: Physical bank locations
+- **ATMs**: Automated teller machines
+- **LAN Ranges**: IP address ranges for local networks
+- **Tunnel Ranges**: IP ranges for secure connections
+- **IP Pools**: Individual assignable IP addresses
+- **Leases**: IP address assignments to devices/locations
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is proprietary software for internal banking operations.
+
+## 🆘 Support
+
+For support or questions, please contact the IT infrastructure team.
